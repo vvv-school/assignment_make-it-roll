@@ -1,5 +1,5 @@
-Operational Control
-===================
+Operational Control with iCub
+=============================
 
 # Prerequisites
 By now, you should be an expert of the following components :wink::
