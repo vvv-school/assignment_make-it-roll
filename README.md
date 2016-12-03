@@ -30,6 +30,8 @@ and the `Gaze Interface` to accomplish the following tasks:
     5. [**Push**](http://gitref.org/remotes/#push)/sync the changes up to GitHub.
     6. [Create a **pull request**](https://help.github.com/articles/creating-a-pull-request) with `master` as _base branch_ and `username` as _compare branch_.
     7. Within the pull request, [**mention** any teacher](https://help.github.com/articles/basic-writing-and-formatting-syntax/#mentioning-users-and-teams) to turn in the assignment.
+    8. Address the points the teacher highlighted by **pushing your fixes** and **replying to the comments** directly from within the pull request.
+    9. **Don't merge** and **don't close** the pull request.
 
 - **Teachers** are required to follow these instructions:
     1. Once created, you can then do [**code review**](https://help.github.com/articles/about-pull-request-reviews) with line-by-line feedback directly within the pull request.
@@ -37,12 +39,12 @@ and the `Gaze Interface` to accomplish the following tasks:
         - Did the student **comment** the code sufficiently?
         - Is the code **cross-compilable**?
         - To which **extent** are the requirements accomplished?
-        - ...
+    3. Once the student has positively addressed all the points, **close the pull request without merging**.
 
 ## Reviewing Notes for Teachers
 In case the student **did not create a new branch**, you can still launch a PR based review by doing:
 
-1. Identify within the student repository the **last commit of the starter code**.
+1. Identify within the student repository the **last commit of the starter code** (i.e. the last commit done by the teacher in the `master` branch).
 2. Create a **new branch** from that commit; call it `review-teacherusername`.
 3. Start a **pull request** with `review-teachernusername` as _base branch_ and `master` as _compare branch_.
 4. You can now do **code review** as explained above.
