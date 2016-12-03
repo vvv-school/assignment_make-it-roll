@@ -1,5 +1,4 @@
 #include <string>
-#include <cstdio>
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
@@ -24,10 +23,10 @@ protected:
     ICartesianControl *iarm;
     IGazeControl      *igaze;
 
-    BufferedPort<ImageOf<PixelRgb>> imgLPortIn,imgRPortIn;
+    BufferedPort<ImageOf<PixelRgb> > imgLPortIn,imgRPortIn;
     Port imgLPortOut,imgRPortOut;
-    RpcServer rpcPort;
-
+    RpcServer rpcPort;    
+    
     Mutex mutex;
     Vector cogL,cogR;
     bool okL,okR;
@@ -103,23 +102,23 @@ protected:
     /***************************************************/
     void roll(const Vector &cogL, const Vector &cogR)
     {
-        printf("detected cogs = (%s) (%s)\n",
-                cogL.toString(0,0).c_str(),cogR.toString(0,0).c_str());
+        yInfo("detected cogs = (%s) (%s)",
+              cogL.toString(0,0).c_str(),cogR.toString(0,0).c_str());
 
         Vector x=retrieveTarget3D(cogL,cogR);
-        printf("retrieved 3D point = (%s)\n",x.toString(3,3).c_str());
+        yInfo("retrieved 3D point = (%s)",x.toString(3,3).c_str());
 
         fixate(x);
-        printf("fixating at (%s)\n",x.toString(3,3).c_str());
+        yInfo("fixating at (%s)",x.toString(3,3).c_str());
 
         Vector o=computeHandOrientation();
-        printf("computed orientation = (%s)\n",o.toString(3,3).c_str());
+        yInfo("computed orientation = (%s)",o.toString(3,3).c_str());
 
         approachTargetWithHand(x,o);
-        printf("approached\n");
+        yInfo("approached");
 
         makeItRoll(x,o);
-        printf("roll!\n");
+        yInfo("roll!");
     }
 
     /***************************************************/
@@ -170,12 +169,20 @@ public:
     /***************************************************/
     bool respond(const Bottle &command, Bottle &reply)
     {
-        string cmd=command.get(0).asString().c_str();
-        if (cmd=="look_down")
+        string cmd=command.get(0).asString();
+        if (cmd=="help")
+        {
+            reply.addVocab(Vocab::encode("many"));
+            reply.addString("Available commands:");
+            reply.addString("- look_down");
+            reply.addString("- make_it_roll");
+            reply.addString("- home");
+            reply.addString("- quit");
+        }
+        else if (cmd=="look_down")
         {
             look_down();
             reply.addString("Yep! I'm looking down now!");
-            return true;
         }
         else if (cmd=="roll")
         {
@@ -188,17 +195,16 @@ public:
             }
             else
                 reply.addString("I don't see any object!");
-
-            return true;
         }
         else if (cmd=="home")
         {
             home();
             reply.addString("I've got the hard work done! Going home.");
-            return true;
         }
         else
             return RFModule::respond(command,reply);
+
+        return true;
     }
 
     /***************************************************/
@@ -246,9 +252,10 @@ int main()
 {
     Network yarp;
     if (!yarp.checkNetwork())
-        return -1;
+        return 1;
 
     CtrlModule mod;
     ResourceFinder rf;
     return mod.runModule(rf);
 }
+

@@ -15,7 +15,7 @@ and the `Gaze Interface` to accomplish the following tasks:
 3. Retrieve the **ball position** in the Cartesian domain.
 4. Ask iCub to reach for the ball and **make it roll**.
 
-![snapshot](/misc/snapshot.png)
+![make-it-roll](/misc/make-it-roll.gif)
 
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the
