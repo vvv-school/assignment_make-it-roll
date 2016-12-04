@@ -13,7 +13,8 @@ and the `Gaze Interface` to accomplish the following tasks:
 1. Make iCub **look down at the table**.
 2. **Detect the blue ball** in both image planes.
 3. Retrieve the **ball position** in the Cartesian domain.
-4. Ask iCub to reach for the ball and **make it roll**.
+4. Let iCub **look at the ball**.
+5. Finally, ask iCub to reach for the ball and **make it roll**.
 
 ![make-it-roll](/misc/make-it-roll.gif)
 
