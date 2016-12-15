@@ -21,5 +21,6 @@ and the `Gaze Interface` to accomplish the following tasks:
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the
 flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github.com/robotology/icub-main/blob/master/app/simConfig/conf/iCub_parts_activation.ini#L28) file.
+- You can instead use this [**model**](https://github.com/robotology-playground/icub-gazebo-wholebody/tree/master/worlds/iCub_and_Table) within **Gazebo**.
 
 # [How to complete the assignment](https://github.com/robotology/robotology.github.io/wiki/How-to-complete-assignments)
