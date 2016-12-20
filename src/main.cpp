@@ -5,14 +5,11 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
-#include <iCub/ctrl/math.h>
-
 using namespace std;
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
-using namespace iCub::ctrl;
 
 
 /***************************************************/
@@ -24,9 +21,9 @@ protected:
     IGazeControl      *igaze;
 
     BufferedPort<ImageOf<PixelRgb> > imgLPortIn,imgRPortIn;
-    Port imgLPortOut,imgRPortOut;
-    RpcServer rpcPort;    
-    
+    BufferedPort<ImageOf<PixelRgb> > imgLPortOut,imgRPortOut;
+    RpcServer rpcPort;
+
     Mutex mutex;
     Vector cogL,cogR;
     bool okL,okR;
@@ -239,8 +236,11 @@ public:
         if (okR)
             draw::addCircle(*imgR,color,(int)cogR[0],(int)cogR[1],5);
 
-        imgLPortOut.write(*imgL);
-        imgRPortOut.write(*imgR);
+        imgLPortOut.prepare()=*imgL;
+        imgRPortOut.prepare()=*imgR;
+
+        imgLPortOut.write();
+        imgRPortOut.write();
 
         return true;
     }
@@ -258,4 +258,3 @@ int main()
     ResourceFinder rf;
     return mod.runModule(rf);
 }
-
