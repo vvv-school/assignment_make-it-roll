@@ -85,7 +85,7 @@ protected:
     }
 
     /***************************************************/
-    void makeItRoll(const Vector &x, const Vector &o)
+    void roll(const Vector &x, const Vector &o)
     {
         // FILL IN THE CODE
     }
@@ -97,7 +97,7 @@ protected:
     }
 
     /***************************************************/
-    void roll(const Vector &cogL, const Vector &cogR)
+    void makeItRoll(const Vector &cogL, const Vector &cogR)
     {
         yInfo("detected cogs = (%s) (%s)",
               cogL.toString(0,0).c_str(),cogR.toString(0,0).c_str());
@@ -114,7 +114,7 @@ protected:
         approachTargetWithHand(x,o);
         yInfo("approached");
 
-        makeItRoll(x,o);
+        roll(x,o);
         yInfo("roll!");
     }
 
@@ -187,7 +187,7 @@ public:
 
             if (...)
             {
-                roll(cogL,cogR);
+                makeItRoll(cogL,cogR);
                 reply.addString("Yeah! I've made it roll like a charm!");
             }
             else
