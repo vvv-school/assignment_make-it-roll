@@ -181,7 +181,7 @@ public:
             look_down();
             reply.addString("Yep! I'm looking down now!");
         }
-        else if (cmd=="roll")
+        else if (cmd=="make_it_roll")
         {
             // FILL IN THE CODE
 
