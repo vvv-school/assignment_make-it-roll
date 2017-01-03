@@ -35,7 +35,7 @@ flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github
     # enable objects
     sed -i '/objects/c\objects on' $where/$file
     ```
-    A [**resource**](https://github.com/robotology/QA/issues/42) you might find useful to get accustomed with configuration files in Yarp :wink:
+    A [**resource**](https://github.com/robotology/QA/issues/42) you might find useful to get accustomed with configuration files in Yarp :smiley:
 - You can instead use this [**model**](https://github.com/robotology-playground/icub-gazebo-wholebody/tree/master/worlds/iCub_and_Table) within **Gazebo**.
 
 # [How to complete the assignment](https://github.com/vvv-school/vvv-school.github.io/blob/master/instructions/how-to-complete-assignments.md)
