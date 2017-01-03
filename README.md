@@ -21,6 +21,21 @@ and the `Gaze Interface` to accomplish the following tasks:
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the
 flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github.com/robotology/icub-main/blob/master/app/simConfig/conf/iCub_parts_activation.ini#L28) file.
+    A possibility would be to run the following script
+    ```sh
+    context="simConfig"
+    file="iCub_parts_activation.ini"
+
+    # import the file for customization (don't print warnings)
+    yarp-config context --import $context $file 2>&1 > /dev/null
+
+    # find out where it's been saved (we're interested in just the first location)
+    where=($(yarp-config context --where $context))
+
+    # enable objects
+    sed -i '/objects/c\objects on' $where/$file
+    ```
+    A [**resource**](https://github.com/robotology/QA/issues/42) you might find useful to get accustomed with configuration files in Yarp :wink:
 - You can instead use this [**model**](https://github.com/robotology-playground/icub-gazebo-wholebody/tree/master/worlds/iCub_and_Table) within **Gazebo**.
 
 # [How to complete the assignment](https://github.com/vvv-school/vvv-school.github.io/blob/master/instructions/how-to-complete-assignments.md)
