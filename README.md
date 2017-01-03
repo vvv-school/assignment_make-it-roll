@@ -21,7 +21,8 @@ and the `Gaze Interface` to accomplish the following tasks:
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the
 flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github.com/robotology/icub-main/blob/master/app/simConfig/conf/iCub_parts_activation.ini#L28) file.
-    A possibility would be to run the following script
+
+    To this end you could run the following **bash instructions**:
     ```sh
     context="simConfig"
     file="iCub_parts_activation.ini"
