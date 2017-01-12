@@ -1,3 +1,7 @@
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+//
+// Author: Ugo Pattacini - <ugo.pattacini@iit.it>
+
 #include <string>
 
 #include <yarp/os/all.h>
@@ -99,23 +103,22 @@ protected:
     /***************************************************/
     void makeItRoll(const Vector &cogL, const Vector &cogR)
     {
-        yInfo("detected cogs = (%s) (%s)",
-              cogL.toString(0,0).c_str(),cogR.toString(0,0).c_str());
+        yInfo()<<"detected cogs = ("<<cogL.toString(0,0)<<") ("<<cogR.toString(0,0)<<")";
 
         Vector x=retrieveTarget3D(cogL,cogR);
-        yInfo("retrieved 3D point = (%s)",x.toString(3,3).c_str());
+        yInfo()<<"retrieved 3D point = ("<<x.toString(3,3)<<")";
 
         fixate(x);
-        yInfo("fixating at (%s)",x.toString(3,3).c_str());
+        yInfo()<<"fixating at ("<<x.toString(3,3)<<")";
 
         Vector o=computeHandOrientation();
-        yInfo("computed orientation = (%s)",o.toString(3,3).c_str());
+        yInfo()<<"computed orientation = ("<<o.toString(3,3)<<")";
 
         approachTargetWithHand(x,o);
-        yInfo("approached");
+        yInfo()<<"approached";
 
         roll(x,o);
-        yInfo("roll!");
+        yInfo()<<"roll!";
     }
 
     /***************************************************/
@@ -179,6 +182,7 @@ public:
         else if (cmd=="look_down")
         {
             look_down();
+            reply.addString("ack");
             reply.addString("Yep! I'm looking down now!");
         }
         else if (cmd=="make_it_roll")
@@ -188,14 +192,19 @@ public:
             if (...)
             {
                 makeItRoll(cogL,cogR);
+                reply.addString("ack");
                 reply.addString("Yeah! I've made it roll like a charm!");
             }
             else
+            {
+                reply.addString("nack");
                 reply.addString("I don't see any object!");
+            }
         }
         else if (cmd=="home")
         {
             home();
+            reply.addString("ack");
             reply.addString("I've got the hard work done! Going home.");
         }
         else
@@ -252,7 +261,10 @@ int main()
 {
     Network yarp;
     if (!yarp.checkNetwork())
+    {
+        yError()<<"YARP doesn't seem to be available";
         return 1;
+    }
 
     CtrlModule mod;
     ResourceFinder rf;
