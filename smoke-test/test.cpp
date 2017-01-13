@@ -66,6 +66,7 @@ public:
     virtual bool setup(yarp::os::Property& property)
     {
         string robot=property.check("robot",Value("icubSim")).asString();
+        double rpcTmo=property.check("rpc-timeout",Value(60.0)).asDouble();
        
         Property option;
         option.put("device","cartesiancontrollerclient");
@@ -83,8 +84,7 @@ public:
 
         portBall.open(portBallName);
         portMIR.open(portMIRName);
-
-        double rpcTmo=60.0;        
+        
         RTF_TEST_REPORT(Asserter::format("Set rpc timeout = %g [s]",rpcTmo));
         portBall.asPort().setTimeout(rpcTmo);
         portMIR.asPort().setTimeout(rpcTmo);
