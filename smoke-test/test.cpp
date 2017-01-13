@@ -5,6 +5,7 @@
 */
 
 #include <string>
+#include <cmath>
 
 #include <rtf/yarp/YarpTestCase.h>
 #include <rtf/dll/Plugin.h>
@@ -21,45 +22,77 @@ using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
 
+
+// forward declaration
+class TestAssignmentMakeItRoll;
+
+
 /**********************************************************************/
-class TestAssignmentMakeItRoll : public YarpTestCase,
-                                 public CartesianEvent
+class ProximityChecker : public RateThread
+{
+    TestAssignmentMakeItRoll *test;
+    
+public:
+    /******************************************************************/
+    ProximityChecker() :
+        RateThread(10),
+        test(NULL)
+    {
+    }
+    
+    /******************************************************************/
+    void setTest(TestAssignmentMakeItRoll *test)
+    {
+        this->test=test;
+    }
+    
+    /******************************************************************/
+    virtual void run();
+};
+
+
+/**********************************************************************/
+class TestAssignmentMakeItRoll : public YarpTestCase
 {
     PolyDriver drvCartArm;
     ICartesianControl *iarm;
-
+    
     RpcClient portBall;
     RpcClient portMIR;
     
+    ProximityChecker proxyChecker;
     Vector ballPosRobFrame;
     bool hit;
+
+    /******************************************************************/
+    Vector getBallPosition()
+    {
+        Bottle cmd,reply;
+        cmd.addString("world");
+        cmd.addString("get");
+        cmd.addString("ball");
+        RTF_ASSERT_ERROR_IF(portBall.write(cmd,reply),"Unable to talk to world");
+        RTF_ASSERT_ERROR_IF(reply.size()>=3,"Invalid reply from world");
+        
+        Vector pos(3);
+        pos[0]=reply.get(0).asDouble();
+        pos[1]=reply.get(1).asDouble();
+        pos[2]=reply.get(2).asDouble();
+        
+        return pos;
+    }    
 
 public:
     /******************************************************************/
     TestAssignmentMakeItRoll() :
         YarpTestCase("TestAssignmentMakeItRoll"),
         hit(false)
-    {        
-        cartesianEventParameters.type="motion-done";
+    {
     }
 
     /******************************************************************/
     virtual ~TestAssignmentMakeItRoll()
     {
-    }
-
-    /******************************************************************/
-    virtual void cartesianEventCallback()
-    {
-        Vector x,o;
-        iarm->getPose(x,o);
-        
-        double dist=norm(ballPosRobFrame-x);
-        if (dist<0.1)
-            hit=true;
-            
-        RTF_TEST_REPORT(Asserter::format("We're at %g [m] from the ball ==> %s",
-                                         dist,hit?"we hit it!":"we didn't hit it yet"));
     }
     
     /******************************************************************/
@@ -75,16 +108,14 @@ public:
 
         RTF_TEST_REPORT("Opening Clients");        
         RTF_ASSERT_ERROR_IF(drvCartArm.open(option),"Unable to open Clients!");
-        
         drvCartArm.view(iarm);
-        iarm->registerEvent(*this);
         
         string portBallName("/"+getName()+"/ball:rpc");
         string portMIRName("/"+getName()+"/mir:rpc");
 
         portBall.open(portBallName);
         portMIR.open(portMIRName);
-        
+
         RTF_TEST_REPORT(Asserter::format("Set rpc timeout = %g [s]",rpcTmo));
         portBall.asPort().setTimeout(rpcTmo);
         portMIR.asPort().setTimeout(rpcTmo);
@@ -94,7 +125,9 @@ public:
                             "Unable to connect to /icubSim/world");        
         RTF_ASSERT_ERROR_IF(Network::connect(portMIRName,"/service"),
                             "Unable to connect to /service");
-
+                            
+        proxyChecker.setTest(this);
+                
         return true;
     }
 
@@ -108,23 +141,28 @@ public:
         RTF_TEST_REPORT("Closing Clients");
         RTF_ASSERT_ERROR_IF(drvCartArm.close(),"Unable to close Clients!");        
     }
+    
+    /******************************************************************/
+    void checkProximity()
+    {
+        Vector x,dummy;
+        iarm->getPose(x,dummy);
+
+        double d=norm(ballPosRobFrame-x);
+        if ((d<0.05) && !hit)
+        {
+            RTF_TEST_REPORT(Asserter::format("Great! We're at %g [m] from the ball",d));
+            hit=true;
+        }
+    }    
 
     /******************************************************************/
     virtual void run()
     {
-        Bottle cmd,reply;
-
         RTF_TEST_REPORT("Retrieving initial ball position");
-        cmd.addString("world"); cmd.addString("get"); cmd.addString("ball");
-        RTF_ASSERT_ERROR_IF(portBall.write(cmd,reply),"Unable to talk to world");
-        RTF_ASSERT_ERROR_IF(reply.size()>=3,"Invalid reply from world");
-        Vector initialBallPos(3);
-        initialBallPos[0]=reply.get(0).asDouble();
-        initialBallPos[1]=reply.get(1).asDouble();
-        initialBallPos[2]=reply.get(2).asDouble();
+        Vector initialBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("initial ball position = (%s) [m]",
                                          initialBallPos.toString(3,3).c_str()));
-        cmd.clear(); reply.clear();
         
         // compute ball position in robot's root reference frame
         Matrix T=zeros(4,4);
@@ -132,37 +170,43 @@ public:
         T(1,2)=1.0;  T(1,3)=0.5976;
         T(2,0)=-1.0; T(2,3)=-0.026;
         T(3,3)=1.0;
-        Vector initBallPosHomo=initialBallPos;
-        initBallPosHomo.push_back(1.0);
-        ballPosRobFrame=SE3inv(T)*initBallPosHomo;
+        Vector initBallPosHomog=initialBallPos;
+        initBallPosHomog.push_back(1.0);
+        ballPosRobFrame=SE3inv(T)*initBallPosHomog;
         ballPosRobFrame.pop_back();
 
+        Bottle cmd,reply;
         cmd.addString("look_down");
         RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
         RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to look_down");
         cmd.clear(); reply.clear();
-
+        
+        proxyChecker.start();
+        
         cmd.addString("make_it_roll");
         RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
         RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to make_it_roll");
         cmd.clear(); reply.clear();
-
+        
+        proxyChecker.stop();
+        
         RTF_TEST_REPORT("Retrieving final ball position");
-        cmd.addString("world"); cmd.addString("get"); cmd.addString("ball");
-        RTF_ASSERT_ERROR_IF(portBall.write(cmd,reply),"Unable to talk to world");
-        RTF_ASSERT_ERROR_IF(reply.size()>=3,"Invalid reply from world");
-        Vector finalBallPos(3);
-        finalBallPos[0]=reply.get(0).asDouble();
-        finalBallPos[1]=reply.get(1).asDouble();
-        finalBallPos[2]=reply.get(2).asDouble();
+        Vector finalBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("final ball position = (%s) [m]",
                                          finalBallPos.toString(3,3).c_str()));
-        cmd.clear(); reply.clear();
 
         double dist=norm(finalBallPos-initialBallPos);
         RTF_TEST_CHECK(hit,"We hit the ball!");
         RTF_TEST_CHECK(dist>0.01,Asserter::format("Ball has rolled for at least %g [m]!",dist));
     }
 };
+
+
+/**********************************************************************/
+void ProximityChecker::run()
+{
+    if (test!=NULL)
+        test->checkProximity();
+}
 
 PREPARE_PLUGIN(TestAssignmentMakeItRoll)
