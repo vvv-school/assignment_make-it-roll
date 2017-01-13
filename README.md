@@ -16,7 +16,16 @@ and the `Gaze Interface` to accomplish the following tasks:
 4. Let iCub **look at the ball**.
 5. Finally, ask iCub to reach for the ball and **make it roll**.
 
+The outcome should look like the animation below:
+
 ![make-it-roll](/misc/make-it-roll.gif)
+
+While the [detection of the blue ball is **already available**](./src/main.cpp#L35-L65); then, you need to fill in the missing gaps in the code regarding each of the remaining points illustrated above.
+
+Once done, you can test your code in two ways:
+
+1. **Manually**: running the _yarpmanager scripts_ provided from within [**app/scripts**](./app/scripts) and yielding corresponding commands to the _module rpc port_.
+2. **Automatically**: running the script in the **smoke-test** directory.
 
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the
@@ -37,6 +46,6 @@ flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github
     sed -i '/objects/c\objects on' $where/$file
     ```
     Also, you might find this [**resource**](https://github.com/robotology/QA/issues/42) quite useful to get accustomed with configuration files in Yarp :smiley:
-- You can instead use this [**model**](https://github.com/robotology-playground/icub-gazebo-wholebody/tree/master/worlds/iCub_and_Table) within **Gazebo**.
+- Alternatively, you can use this [**model**](https://github.com/robotology-playground/icub-gazebo-wholebody/tree/master/worlds/iCub_and_Table) within **Gazebo**. Be careful, the **smoke-test** does work only with iCub_SIM.
 
 # [How to complete the assignment](https://github.com/vvv-school/vvv-school.github.io/blob/master/instructions/how-to-complete-assignments.md)
