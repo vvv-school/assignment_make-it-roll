@@ -188,8 +188,9 @@ public:
         else if (cmd=="make_it_roll")
         {
             // FILL IN THE CODE
+            bool go=true;   // you need to properly handle this flag
 
-            if (...)
+            if (go)
             {
                 makeItRoll(cogL,cogR);
                 reply.addString("ack");
