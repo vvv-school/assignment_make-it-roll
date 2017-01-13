@@ -25,7 +25,7 @@ While the [detection of the blue ball is **already available**](./src/main.cpp#L
 Once done, you can test your code in two ways:
 
 1. **Manually**: running the _yarpmanager scripts_ provided from within [**app/scripts**](./app/scripts) and yielding corresponding commands to the _module rpc port_.
-2. **Automatically**: running the script in the **smoke-test** directory.
+2. **Automatically**: [running **test.sh**](https://github.com/vvv-school/vvv-school.github.io/blob/master/instructions/how-to-run-smoke-tests.md) in the **smoke-test** directory.
 
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the
