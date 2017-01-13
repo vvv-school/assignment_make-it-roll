@@ -10,26 +10,37 @@
 #include <rtf/dll/Plugin.h>
 
 #include <yarp/os/all.h>
+#include <yarp/dev/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
 using namespace std;
 using namespace RTF;
 using namespace yarp::os;
+using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
 
 /**********************************************************************/
-class TestAssignmentMakeItRoll : public YarpTestCase
+class TestAssignmentMakeItRoll : public YarpTestCase,
+                                 public CartesianEvent
 {
+    PolyDriver drvCartArm;
+    ICartesianControl *iarm;
+
     RpcClient portBall;
     RpcClient portMIR;
+    
+    Vector ballPosRobFrame;
+    bool hit;
 
 public:
     /******************************************************************/
     TestAssignmentMakeItRoll() :
-        YarpTestCase("TestAssignmentMakeItRoll")
-    {
+        YarpTestCase("TestAssignmentMakeItRoll"),
+        hit(false)
+    {        
+        cartesianEventParameters.type="motion-done";
     }
 
     /******************************************************************/
@@ -38,19 +49,51 @@ public:
     }
 
     /******************************************************************/
+    virtual void cartesianEventCallback()
+    {
+        Vector x,o;
+        iarm->getPose(x,o);
+        
+        double dist=norm(ballPosRobFrame-x);
+        if (dist<0.1)
+            hit=true;
+            
+        RTF_TEST_REPORT(Asserter::format("We're at %g [m] from the ball ==> %s",
+                                         dist,hit?"we hit it!":"we didn't hit it yet"));
+    }
+    
+    /******************************************************************/
     virtual bool setup(yarp::os::Property& property)
     {
+        string robot=property.check("robot",Value("icubSim")).asString();
+       
+        Property option;
+        option.put("device","cartesiancontrollerclient");
+        option.put("remote","/"+robot+"/"+"cartesianController/right_arm");
+        option.put("local","/"+getName()+"/cartesian");
+
+        RTF_TEST_REPORT("Opening Clients");        
+        RTF_ASSERT_ERROR_IF(drvCartArm.open(option),"Unable to open Clients!");
+        
+        drvCartArm.view(iarm);
+        iarm->registerEvent(*this);
+        
         string portBallName("/"+getName()+"/ball:rpc");
         string portMIRName("/"+getName()+"/mir:rpc");
 
         portBall.open(portBallName);
         portMIR.open(portMIRName);
 
+        double rpcTmo=60.0;        
+        RTF_TEST_REPORT(Asserter::format("Set rpc timeout = %g [s]",rpcTmo));
+        portBall.asPort().setTimeout(rpcTmo);
+        portMIR.asPort().setTimeout(rpcTmo);
+        
         RTF_TEST_REPORT("Connecting Ports");
         RTF_ASSERT_ERROR_IF(Network::connect(portBallName,"/icubSim/world"),
-                            "Unable to connect to world!");
+                            "Unable to connect to /icubSim/world");        
         RTF_ASSERT_ERROR_IF(Network::connect(portMIRName,"/service"),
-                            "Unable to connect to world!");
+                            "Unable to connect to /service");
 
         return true;
     }
@@ -61,6 +104,9 @@ public:
         RTF_TEST_REPORT("Closing Ports");
         portBall.close();
         portMIR.close();
+        
+        RTF_TEST_REPORT("Closing Clients");
+        RTF_ASSERT_ERROR_IF(drvCartArm.close(),"Unable to close Clients!");        
     }
 
     /******************************************************************/
@@ -79,6 +125,17 @@ public:
         RTF_TEST_REPORT(Asserter::format("initial ball position = (%s) [m]",
                                          initialBallPos.toString(3,3).c_str()));
         cmd.clear(); reply.clear();
+        
+        // compute ball position in robot's root reference frame
+        Matrix T=zeros(4,4);
+        T(0,1)=-1.0;
+        T(1,2)=1.0;  T(1,3)=0.5976;
+        T(2,0)=-1.0; T(2,3)=-0.026;
+        T(3,3)=1.0;
+        Vector initBallPosHomo=initialBallPos;
+        initBallPosHomo.push_back(1.0);
+        ballPosRobFrame=SE3inv(T)*initBallPosHomo;
+        ballPosRobFrame.pop_back();
 
         cmd.addString("look_down");
         RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
@@ -103,7 +160,8 @@ public:
         cmd.clear(); reply.clear();
 
         double dist=norm(finalBallPos-initialBallPos);
-        RTF_TEST_CHECK(dist>0.01,Asserter::format("Ball has rolled for %g [m]!",dist));
+        RTF_TEST_CHECK(hit,"We hit the ball!");
+        RTF_TEST_CHECK(dist>0.01,Asserter::format("Ball has rolled for at least %g [m]!",dist));
     }
 };
 
