@@ -41,6 +41,7 @@
             <port timeout="10">/icubSim/cam/left</port>
             <port timeout="10">/icubSim/cam/right</port>
             <port timeout="10">/icubSim/cartesianController/right_arm/state:o</port>
+            <port timeout="10">/cartesianSolver/right_arm/rpc</port>
             <port timeout="10">/iKinGazeCtrl/rpc</port>
         </dependencies>
         <node>testnode</node>
