@@ -65,9 +65,10 @@ public:
     virtual bool setup(yarp::os::Property& property)
     {
         string robot=property.check("robot",Value("icubSim")).asString();
+        string hand=property.check("hand",Value("right")).asString();
         double rpcTmo=property.check("rpc-timeout",Value(60.0)).asDouble();
         
-        string robotPortName("/"+robot+"/cartesianController/right_arm/state:o");
+        string robotPortName("/"+robot+"/cartesianController/"+hand+"_arm/state:o");
 
         string portBallName("/"+getName()+"/ball:rpc");
         string portMIRName("/"+getName()+"/mir:rpc");
