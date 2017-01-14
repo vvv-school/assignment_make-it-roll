@@ -5,62 +5,28 @@
 */
 
 #include <string>
-#include <cmath>
 
 #include <rtf/yarp/YarpTestCase.h>
 #include <rtf/dll/Plugin.h>
 
 #include <yarp/os/all.h>
-#include <yarp/dev/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
 using namespace std;
 using namespace RTF;
 using namespace yarp::os;
-using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
 
-
-// forward declaration
-class TestAssignmentMakeItRoll;
-
-
 /**********************************************************************/
-class ProximityChecker : public RateThread
+class TestAssignmentMakeItRoll : public YarpTestCase,
+                                 public PortReader
 {
-    TestAssignmentMakeItRoll *test;
-    
-public:
-    /******************************************************************/
-    ProximityChecker() :
-        RateThread(10),
-        test(NULL)
-    {
-    }
-    
-    /******************************************************************/
-    void setTest(TestAssignmentMakeItRoll *test)
-    {
-        this->test=test;
-    }
-    
-    /******************************************************************/
-    virtual void run();
-};
-
-
-/**********************************************************************/
-class TestAssignmentMakeItRoll : public YarpTestCase
-{
-    PolyDriver drvCartArm;
-    ICartesianControl *iarm;
-    
     RpcClient portBall;
     RpcClient portMIR;
-    
-    ProximityChecker proxyChecker;
+    Port      portHand;
+
     Vector ballPosRobFrame;
     bool hit;
 
@@ -100,21 +66,16 @@ public:
     {
         string robot=property.check("robot",Value("icubSim")).asString();
         double rpcTmo=property.check("rpc-timeout",Value(60.0)).asDouble();
-       
-        Property option;
-        option.put("device","cartesiancontrollerclient");
-        option.put("remote","/"+robot+"/"+"cartesianController/right_arm");
-        option.put("local","/"+getName()+"/cartesian");
-
-        RTF_TEST_REPORT("Opening Clients");        
-        RTF_ASSERT_ERROR_IF(drvCartArm.open(option),"Unable to open Clients!");
-        drvCartArm.view(iarm);
         
+        string robotPortName("/"+robot+"/cartesianController/right_arm/state:o");
+
         string portBallName("/"+getName()+"/ball:rpc");
         string portMIRName("/"+getName()+"/mir:rpc");
+        string portHandName("/"+getName()+"/hand:i");
 
         portBall.open(portBallName);
         portMIR.open(portMIRName);
+        portHand.open(portHandName);
 
         RTF_TEST_REPORT(Asserter::format("Set rpc timeout = %g [s]",rpcTmo));
         portBall.asPort().setTimeout(rpcTmo);
@@ -125,8 +86,9 @@ public:
                             "Unable to connect to /icubSim/world");        
         RTF_ASSERT_ERROR_IF(Network::connect(portMIRName,"/service"),
                             "Unable to connect to /service");
-                            
-        proxyChecker.setTest(this);
+        RTF_ASSERT_ERROR_IF(Network::connect(robotPortName,portHandName),
+                            Asserter::format("Unable to connect to %s",
+                                             robotPortName.c_str()));
                 
         return true;
     }
@@ -137,34 +99,44 @@ public:
         RTF_TEST_REPORT("Closing Ports");
         portBall.close();
         portMIR.close();
-        
-        RTF_TEST_REPORT("Closing Clients");
-        RTF_ASSERT_ERROR_IF(drvCartArm.close(),"Unable to close Clients!");        
+        portHand.close();
     }
     
     /******************************************************************/
-    void checkProximity()
+    virtual bool read(ConnectionReader& reader)
     {
-        Vector x,dummy;
-        iarm->getPose(x,dummy);
+        Bottle data;
+        data.read(reader);
 
-        double d=norm(ballPosRobFrame-x);
-        if ((d<0.05) && !hit)
-        {
-            RTF_TEST_REPORT(Asserter::format("Great! We're at %g [m] from the ball",d));
-            hit=true;
+        if (!hit)
+        {           
+            Vector x(3);
+            x[0]=data.get(0).asDouble();
+            x[1]=data.get(1).asDouble();
+            x[2]=data.get(2).asDouble();
+
+            double d=norm(ballPosRobFrame-x);
+            if (d<0.05)
+            {
+                RTF_TEST_REPORT(Asserter::format("Great! We're at %g [m] from the ball",d));
+                hit=true;
+            }
         }
+        
+        return true;
     }    
 
     /******************************************************************/
     virtual void run()
     {
+        Time::delay(5.0);
+
         RTF_TEST_REPORT("Retrieving initial ball position");
         Vector initialBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("initial ball position = (%s) [m]",
                                          initialBallPos.toString(3,3).c_str()));
         
-        // compute ball position in robot's root reference frame
+        // compute ball position in robot's root frame
         Matrix T=zeros(4,4);
         T(0,1)=-1.0;
         T(1,2)=1.0;  T(1,3)=0.5976;
@@ -181,32 +153,23 @@ public:
         RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to look_down");
         cmd.clear(); reply.clear();
         
-        proxyChecker.start();
+        RTF_TEST_REPORT("Proximity check is now active");
+        portHand.setReader(*this);
         
         cmd.addString("make_it_roll");
         RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
         RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to make_it_roll");
         cmd.clear(); reply.clear();
         
-        proxyChecker.stop();
-        
         RTF_TEST_REPORT("Retrieving final ball position");
         Vector finalBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("final ball position = (%s) [m]",
                                          finalBallPos.toString(3,3).c_str()));
 
-        double dist=norm(finalBallPos-initialBallPos);
+        double d=norm(finalBallPos-initialBallPos);
         RTF_TEST_CHECK(hit,"We hit the ball!");
-        RTF_TEST_CHECK(dist>0.01,Asserter::format("Ball has rolled for at least %g [m]!",dist));
+        RTF_TEST_CHECK(d>0.01,Asserter::format("Ball has rolled for at least %g [m]!",d));
     }
 };
-
-
-/**********************************************************************/
-void ProximityChecker::run()
-{
-    if (test!=NULL)
-        test->checkProximity();
-}
 
 PREPARE_PLUGIN(TestAssignmentMakeItRoll)
