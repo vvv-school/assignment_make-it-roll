@@ -12,6 +12,7 @@
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
+#include <yarp/math/Rand.h>
 
 using namespace std;
 using namespace RTF;
@@ -46,7 +47,26 @@ class TestAssignmentMakeItRoll : public YarpTestCase,
         pos[2]=reply.get(2).asDouble();
         
         return pos;
-    }    
+    }
+
+    /******************************************************************/
+    bool setBallPosition(const Vector& pos)
+    {
+        if (pos.length()>=3)
+        {
+            Bottle cmd,reply;
+            cmd.addString("world");
+            cmd.addString("set");
+            cmd.addString("ball");
+            cmd.addDouble(pos[0]);
+            cmd.addDouble(pos[1]);
+            cmd.addDouble(pos[2]);
+            RTF_ASSERT_ERROR_IF(portBall.write(cmd,reply),"Unable to talk to world");
+            return true;
+        }
+        else
+            return false;
+    }
 
 public:
     /******************************************************************/
@@ -91,6 +111,8 @@ public:
                             Asserter::format("Unable to connect to %s",
                                              robotPortName.c_str()));
                 
+        Rand::init();
+        
         return true;
     }
 
@@ -106,11 +128,11 @@ public:
     /******************************************************************/
     virtual bool read(ConnectionReader& reader)
     {
-        Bottle data;
-        data.read(reader);
-
         if (!hit)
-        {           
+        {
+            Bottle data;
+            data.read(reader); 
+   
             Vector x(3);
             x[0]=data.get(0).asDouble();
             x[1]=data.get(1).asDouble();
@@ -136,6 +158,17 @@ public:
         Vector initialBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("initial ball position = (%s) [m]",
                                          initialBallPos.toString(3,3).c_str()));
+         
+        Vector min(3,0.0),max(3,0.0);
+        min[0]=-0.02; max[0]=0.04;  // x-axis
+        min[1]= 0.0;  max[1]=0.0;   // y-axis
+        min[2]=-0.03; max[2]=0.03;  // z-axis
+        
+        RTF_TEST_REPORT("Setting new initial ball position");
+        initialBallPos+=Rand::vector(min,max);
+        setBallPosition(initialBallPos);
+        RTF_TEST_REPORT(Asserter::format("new ball position = (%s) [m]",
+                                         initialBallPos.toString(3,3).c_str()));        
         
         // compute ball position in robot's root frame
         Matrix T=zeros(4,4);
