@@ -101,7 +101,7 @@ protected:
     }
 
     /***************************************************/
-    void makeItRoll(const Vector &cogL, const Vector &cogR)
+    void make_it_roll(const Vector &cogL, const Vector &cogR)
     {
         yInfo()<<"detected cogs = ("<<cogL.toString(0,0)<<") ("<<cogR.toString(0,0)<<")";
 
@@ -219,7 +219,7 @@ public:
 
             if (go)
             {
-                makeItRoll(cogL,cogR);
+                make_it_roll(cogL,cogR);
                 // we assume the robot is at rest now
                 reply.addString("ack");
                 reply.addString("Yeah! I've made it roll like a charm!");
