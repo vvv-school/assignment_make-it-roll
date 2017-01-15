@@ -208,7 +208,7 @@ public:
         else if (cmd=="look_down")
         {
             look_down();
-            // we assume the robot is at rest now
+            // we assume the robot is not moving now
             reply.addString("ack");
             reply.addString("Yep! I'm looking down now!");
         }
@@ -220,7 +220,7 @@ public:
             if (go)
             {
                 make_it_roll(cogL,cogR);
-                // we assume the robot is at rest now
+                // we assume the robot is not moving now
                 reply.addString("ack");
                 reply.addString("Yeah! I've made it roll like a charm!");
             }
@@ -233,7 +233,7 @@ public:
         else if (cmd=="home")
         {
             home();
-            // we assume the robot is at rest now
+            // we assume the robot is not moving now
             reply.addString("ack");
             reply.addString("I've got the hard work done! Going home.");
         }
