@@ -27,7 +27,7 @@ Once done, you can test your code in two ways:
 1. **Manually**: running the _yarpmanager scripts_ provided from within [**app/scripts**](./app/scripts) and yielding corresponding commands to the _module rpc port_.
 2. **Automatically**: [running the script **test.sh**](https://github.com/vvv-school/vvv-school.github.io/blob/master/instructions/how-to-run-smoke-tests.md) in the **smoke-test** directory. Take into account these two important points:
     1. We use a **timeout of _60 s_** to check the status of rpc communication, meaning that you have _60 s_ max to accomplish each operation of the list above.
-    2. When you reply to rpc commands, we assume the robot has **finished the movement**.
+    2. When you reply to rpc commands, we assume the robot has **finished the movement** (e.g. see [_this line_](https://github.com/vvv-school/assignment_make-it-roll/blob/master/src/main.cpp#L223) in the `respond` method).
 
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the
