@@ -238,6 +238,7 @@ public:
             reply.addString("I've got the hard work done! Going home.");
         }
         else
+            // the father class already handles the "quit" command
             return RFModule::respond(command,reply);
 
         return true;
