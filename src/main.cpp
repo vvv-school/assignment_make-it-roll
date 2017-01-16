@@ -131,10 +131,11 @@ public:
     /***************************************************/
     bool configure(ResourceFinder &rf)
     {
-        Property optArm("(device cartesiancontrollerclient)");
+        Property optArm;
+        optArm.put("device","cartesiancontrollerclient");
         optArm.put("remote","/icubSim/cartesianController/right_arm");
         optArm.put("local","/cartesian_client/right_arm");
-        
+
         // let's give the controller some time to warm up
         bool ok=false;
         double t0=Time::now();
@@ -147,16 +148,16 @@ public:
                 ok=true;
                 break;
             }
-            
+
             Time::delay(1.0);
         }
-        
+
         if (!ok)
         {
             yError()<<"Unable to open the Cartesian Controller";
             return false;
         }
-        
+
         // FILL IN THE CODE
 
         imgLPortIn.open("/imgL:i");
