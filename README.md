@@ -37,10 +37,10 @@ flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github
     To do so, follow these steps (the **smoke-test** does them for you):
     ```sh
     # import the file for customization
-    yarp-config context --import simConfig iCub_parts_activation.ini
+    $ yarp-config context --import simConfig iCub_parts_activation.ini
 
     # open the file
-    gedit ~/.local/share/yarp/contexts/simConfig/iCub_parts_activation.ini
+    $ gedit ~/.local/share/yarp/contexts/simConfig/iCub_parts_activation.ini
     ```
     Now, edit the file by setting the option **objects** under the group _RENDER_ equal to **on**.
     
