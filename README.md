@@ -34,20 +34,16 @@ Once done, you can test your code in two ways:
 - To make the blue ball show up within the simulator, you have to turn on the
 flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github.com/robotology/icub-main/blob/master/app/simConfig/conf/iCub_parts_activation.ini#L28) file.
 
-    To do so, you could run the following **bash commands** (the **smoke-test** does them for you):
+    To do so, follow these steps (the **smoke-test** does them for you):
     ```sh
-    context="simConfig"
-    file="iCub_parts_activation.ini"
+    # import the file for customization
+    yarp-config context --import simConfig iCub_parts_activation.ini
 
-    # import the file for customization (don't print warnings)
-    yarp-config context --import $context $file 2>&1 > /dev/null
-
-    # find out where it's been saved (we're interested in just the first location)
-    where=($(yarp-config context --where $context))
-
-    # enable objects
-    sed -i '/objects/c\objects on' $where/$file
+    # open the file
+    gedit ~/.local/share/yarp/contexts/simConfig/iCub_parts_activation.ini
     ```
+    Now, edit the file by setting the option **objects** under the group _RENDER_ equal to **on**.
+    
     Also, you might find this [**resource**](https://github.com/robotology/QA/issues/42) quite useful to get accustomed with configuration files in Yarp :smiley:
 - Alternatively, you can use this [**model**](https://github.com/robotology-playground/icub-gazebo-wholebody/tree/master/worlds/iCub_and_Table) within **Gazebo**. Be careful, the **smoke-test** does work only with iCub_SIM.
 
