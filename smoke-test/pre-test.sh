@@ -17,7 +17,7 @@ if [ -f ${abspath_to_file} ]; then
 fi
 
 # import default values
-yarp-config context --import $context $file 2>&1 > /dev/null
+yarp-config context --import $context $file
 
 # enable objects
 sed -i '/objects/c\objects on' ${abspath_to_file}
