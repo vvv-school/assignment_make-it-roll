@@ -236,7 +236,7 @@ public:
             home();
             // we assume the robot is not moving now
             reply.addString("ack");
-            reply.addString("I've got the hard work done! Going home.");
+            reply.addString("I've got the hard work done! Gone home.");
         }
         else
             // the father class already handles the "quit" command
