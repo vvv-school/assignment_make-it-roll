@@ -86,7 +86,7 @@ public:
     {
         string robot=property.check("robot",Value("icubSim")).asString();
         string hand=property.check("hand",Value("right")).asString();
-        double rpcTmo=property.check("rpc-timeout",Value(60.0)).asDouble();
+        float rpcTmo=(float)property.check("rpc-timeout",Value(60.0)).asDouble();
         
         string robotPortName("/"+robot+"/cartesianController/"+hand+"_arm/state:o");
 
