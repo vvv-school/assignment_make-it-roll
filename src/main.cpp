@@ -68,6 +68,7 @@ protected:
     Vector retrieveTarget3D(const Vector &cogL, const Vector &cogR)
     {
         // FILL IN THE CODE
+        return Vector(3);
     }
 
     /***************************************************/
@@ -80,6 +81,7 @@ protected:
     Vector computeHandOrientation()
     {
         // FILL IN THE CODE
+        return Vector(4);
     }
 
     /***************************************************/
