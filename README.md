@@ -20,7 +20,7 @@ The outcome should look like the animation below:
 
 ![make-it-roll](/misc/make-it-roll.gif)
 
-The [detection of the blue ball is **already available**](./src/main.cpp#L35-L65), so you need to fill in the missing gaps in the code regarding each of the remaining points illustrated above.
+The [detection of the blue ball is **already available**](./src/main.cpp#L35-L65), so you need to fill in the missing gaps in the code (highlighted with `// FILL IN THE GAP`) regarding each of the remaining points illustrated above.
 
 Once done, you can test your code in two ways:
 
