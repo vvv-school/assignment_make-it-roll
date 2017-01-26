@@ -40,12 +40,12 @@ class TestAssignmentMakeItRoll : public YarpTestCase,
         cmd.addString("ball");
         RTF_ASSERT_ERROR_IF(portBall.write(cmd,reply),"Unable to talk to world");
         RTF_ASSERT_ERROR_IF(reply.size()>=3,"Invalid reply from world");
-        
+
         Vector pos(3);
         pos[0]=reply.get(0).asDouble();
         pos[1]=reply.get(1).asDouble();
         pos[2]=reply.get(2).asDouble();
-        
+
         return pos;
     }
 
@@ -80,14 +80,14 @@ public:
     virtual ~TestAssignmentMakeItRoll()
     {
     }
-    
+
     /******************************************************************/
     virtual bool setup(yarp::os::Property& property)
     {
         string robot=property.check("robot",Value("icubSim")).asString();
         string hand=property.check("hand",Value("right")).asString();
-        float rpcTmo=(float)property.check("rpc-timeout",Value(60.0)).asDouble();
-        
+        float rpcTmo=(float)property.check("rpc-timeout",Value(120.0)).asDouble();
+
         string robotPortName("/"+robot+"/cartesianController/"+hand+"_arm/state:o");
 
         string portBallName("/"+getName()+"/ball:rpc");
@@ -101,18 +101,18 @@ public:
         RTF_TEST_REPORT(Asserter::format("Set rpc timeout = %g [s]",rpcTmo));
         portBall.asPort().setTimeout(rpcTmo);
         portMIR.asPort().setTimeout(rpcTmo);
-        
+
         RTF_TEST_REPORT("Connecting Ports");
         RTF_ASSERT_ERROR_IF(Network::connect(portBallName,"/icubSim/world"),
-                            "Unable to connect to /icubSim/world");        
+                            "Unable to connect to /icubSim/world");
         RTF_ASSERT_ERROR_IF(Network::connect(portMIRName,"/service"),
                             "Unable to connect to /service");
         RTF_ASSERT_ERROR_IF(Network::connect(robotPortName,portHandName),
                             Asserter::format("Unable to connect to %s",
                                              robotPortName.c_str()));
-                
+
         Rand::init();
-        
+
         return true;
     }
 
@@ -124,15 +124,15 @@ public:
         portMIR.close();
         portHand.close();
     }
-    
+
     /******************************************************************/
     virtual bool read(ConnectionReader& reader)
     {
         if (!hit)
         {
             Bottle data;
-            data.read(reader); 
-   
+            data.read(reader);
+
             Vector x(3);
             x[0]=data.get(0).asDouble();
             x[1]=data.get(1).asDouble();
@@ -145,31 +145,31 @@ public:
                 hit=true;
             }
         }
-        
+
         return true;
-    }    
+    }
 
     /******************************************************************/
     virtual void run()
     {
         Time::delay(5.0);
-        
+
         RTF_TEST_REPORT("Retrieving initial ball position");
         Vector initialBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("initial ball position = (%s) [m]",
                                          initialBallPos.toString(3,3).c_str()));
-         
+
         Vector min(3,0.0),max(3,0.0);
         min[0]=-0.02; max[0]=0.04;  // x-axis
         min[1]= 0.0;  max[1]=0.0;   // y-axis
         min[2]=-0.03; max[2]=0.03;  // z-axis
-        
+
         RTF_TEST_REPORT("Setting new initial ball position");
         initialBallPos+=Rand::vector(min,max);
         setBallPosition(initialBallPos);
         RTF_TEST_REPORT(Asserter::format("new ball position = (%s) [m]",
-                                         initialBallPos.toString(3,3).c_str()));        
-        
+                                         initialBallPos.toString(3,3).c_str()));
+
         // compute ball position in robot's root frame
         Matrix T=zeros(4,4);
         T(0,1)=-1.0;
@@ -186,15 +186,15 @@ public:
         RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
         RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to look_down");
         cmd.clear(); reply.clear();
-        
+
         RTF_TEST_REPORT("Proximity check is now active");
         portHand.setReader(*this);
-        
+
         cmd.addString("make_it_roll");
         RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
         RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to make_it_roll");
         cmd.clear(); reply.clear();
-        
+
         RTF_TEST_REPORT("Retrieving final ball position");
         Vector finalBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("final ball position = (%s) [m]",
