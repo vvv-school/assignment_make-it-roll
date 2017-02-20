@@ -17,13 +17,12 @@
 
 using namespace std;
 using namespace RTF;
-using namespace yarp::rtf;
 using namespace yarp::os;
 using namespace yarp::sig;
 using namespace yarp::math;
 
 /**********************************************************************/
-class TestAssignmentMakeItRoll : public TestCase,
+class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
                                  public PortReader
 {
     RpcClient portBall;
@@ -73,7 +72,7 @@ class TestAssignmentMakeItRoll : public TestCase,
 public:
     /******************************************************************/
     TestAssignmentMakeItRoll() :
-        TestCase("TestAssignmentMakeItRoll"),
+        yarp::rtf::TestCase("TestAssignmentMakeItRoll"),
         hit(false)
     {
     }
