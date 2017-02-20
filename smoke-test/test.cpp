@@ -6,11 +6,10 @@
 
 #include <string>
 
-#include <yarp/rtf/TestCase.h>
 #include <rtf/dll/Plugin.h>
 #include <rtf/TestAssert.h>
 
-
+#include <yarp/rtf/TestCase.h>
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
@@ -18,12 +17,13 @@
 
 using namespace std;
 using namespace RTF;
+using namespace yarp::rtf;
 using namespace yarp::os;
 using namespace yarp::sig;
 using namespace yarp::math;
 
 /**********************************************************************/
-class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
+class TestAssignmentMakeItRoll : public TestCase,
                                  public PortReader
 {
     RpcClient portBall;
@@ -73,7 +73,7 @@ class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
 public:
     /******************************************************************/
     TestAssignmentMakeItRoll() :
-        yarp::rtf::TestCase("TestAssignmentMakeItRoll"),
+        TestCase("TestAssignmentMakeItRoll"),
         hit(false)
     {
     }
