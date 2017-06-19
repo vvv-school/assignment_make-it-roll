@@ -18,13 +18,13 @@
 
   <module>
       <name>yarpview</name>
-      <parameters>--name /viewerL --x 10 --y 10</parameters>
+      <parameters>--name /viewerL --x 10 --y 10 --compact</parameters>
       <node>localhost</node>
   </module>
 
   <module>
       <name>yarpview</name>
-      <parameters>--name /viewerR --x 360 --y 10</parameters>
+      <parameters>--name /viewerR --x 360 --y 10 --compact</parameters>
       <node>localhost</node>
   </module>
 
