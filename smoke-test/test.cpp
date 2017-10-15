@@ -39,8 +39,8 @@ class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
         cmd.addString("world");
         cmd.addString("get");
         cmd.addString("ball");
-        RTF_ASSERT_ERROR_IF(portBall.write(cmd,reply),"Unable to talk to world");
-        RTF_ASSERT_ERROR_IF(reply.size()>=3,"Invalid reply from world");
+        RTF_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
+        RTF_ASSERT_ERROR_IF_FALSE(reply.size()>=3,"Invalid reply from world");
 
         Vector pos(3);
         pos[0]=reply.get(0).asDouble();
@@ -62,7 +62,7 @@ class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
             cmd.addDouble(pos[0]);
             cmd.addDouble(pos[1]);
             cmd.addDouble(pos[2]);
-            RTF_ASSERT_ERROR_IF(portBall.write(cmd,reply),"Unable to talk to world");
+            RTF_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
             return true;
         }
         else
@@ -104,13 +104,13 @@ public:
         portMIR.asPort().setTimeout(rpcTmo);
 
         RTF_TEST_REPORT("Connecting Ports");
-        RTF_ASSERT_ERROR_IF(Network::connect(portBallName,"/icubSim/world"),
-                            "Unable to connect to /icubSim/world");
-        RTF_ASSERT_ERROR_IF(Network::connect(portMIRName,"/service"),
-                            "Unable to connect to /service");
-        RTF_ASSERT_ERROR_IF(Network::connect(robotPortName,portHandName),
-                            Asserter::format("Unable to connect to %s",
-                                             robotPortName.c_str()));
+        RTF_ASSERT_ERROR_IF_FALSE(Network::connect(portBallName,"/icubSim/world"),
+                                  "Unable to connect to /icubSim/world");
+        RTF_ASSERT_ERROR_IF_FALSE(Network::connect(portMIRName,"/service"),
+                                  "Unable to connect to /service");
+        RTF_ASSERT_ERROR_IF_FALSE(Network::connect(robotPortName,portHandName),
+                                  Asserter::format("Unable to connect to %s",
+                                                   robotPortName.c_str()));
 
         Rand::init();
 
@@ -184,16 +184,16 @@ public:
 
         Bottle cmd,reply;
         cmd.addString("look_down");
-        RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
-        RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to look_down");
+        RTF_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
+        RTF_ASSERT_ERROR_IF_FALSE(reply.get(0).asString()=="ack","Unable to look_down");
         cmd.clear(); reply.clear();
 
         RTF_TEST_REPORT("Proximity check is now active");
         portHand.setReader(*this);
 
         cmd.addString("make_it_roll");
-        RTF_ASSERT_ERROR_IF(portMIR.write(cmd,reply),"Unable to talk to MIR");
-        RTF_ASSERT_ERROR_IF(reply.get(0).asString()=="ack","Unable to make_it_roll");
+        RTF_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
+        RTF_ASSERT_ERROR_IF_FALSE(reply.get(0).asString()=="ack","Unable to make_it_roll");
         cmd.clear(); reply.clear();
 
         RTF_TEST_REPORT("Retrieving final ball position");
