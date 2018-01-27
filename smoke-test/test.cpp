@@ -151,6 +151,13 @@ public:
     }
 
     /******************************************************************/
+    void finishup(const unsigned int score, const string &msg)
+    {
+        RTF_TEST_REPORT(msg.c_str());
+        RTF_TEST_CHECK(false,Asserter::format("Total score = %d",score));
+    }
+
+    /******************************************************************/
     virtual void run()
     {
         Time::delay(5.0);
@@ -182,28 +189,55 @@ public:
         ballPosRobFrame=SE3inv(T)*initBallPosHomog;
         ballPosRobFrame.pop_back();
 
+        unsigned int score=0;
+
         Bottle cmd,reply;
         cmd.addString("look_down");
         RTF_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
-        RTF_ASSERT_ERROR_IF_FALSE(reply.get(0).asString()=="ack","Unable to look_down");
+        if (reply.get(0).asString()!="ack")
+        {
+            finishup(0,"Unable to look_down");
+            return;
+        }
         cmd.clear(); reply.clear();
+
+        RTF_TEST_REPORT("We looked down! Gained 1 point");
+        score++;
 
         RTF_TEST_REPORT("Proximity check is now active");
         portHand.setReader(*this);
 
         cmd.addString("make_it_roll");
         RTF_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
-        RTF_ASSERT_ERROR_IF_FALSE(reply.get(0).asString()=="ack","Unable to make_it_roll");
+        if (reply.get(0).asString()!="ack")
+        {
+            finishup(score,"Unable to make_it_roll");
+            return;
+        }
         cmd.clear(); reply.clear();
+
+        RTF_TEST_REPORT("We tried to roll! Gained 1 point");
+        score++;
 
         RTF_TEST_REPORT("Retrieving final ball position");
         Vector finalBallPos=getBallPosition();
         RTF_TEST_REPORT(Asserter::format("final ball position = (%s) [m]",
                                          finalBallPos.toString(3,3).c_str()));
 
+        if (hit)
+        {
+            RTF_TEST_REPORT("We hit the ball! Gained 2 point");
+            score+=2;
+        }
+
         double d=norm(finalBallPos-initialBallPos);
-        RTF_TEST_CHECK(hit,"We hit the ball!");
-        RTF_TEST_CHECK(d>0.01,Asserter::format("Ball has rolled for at least %g [m]!",d));
+        if (d>0.01)
+        {
+            RTF_TEST_REPORT(Asserter::format("Ball has rolled for at least %g [m]! Gained 3 points",d));
+            score+=3;
+        }
+
+        RTF_TEST_CHECK(true,Asserter::format("Total score = %d",score));
     }
 };
 
