@@ -16,8 +16,7 @@ and the `Gaze Interface` to accomplish the following tasks:
 1. Let iCub **look at the ball**.
 1. Finally, ask iCub to reach for the ball and **make it roll**.
 
-This assignment is peculiar in such a way that **we can interface the simulator
-and the real robot indifferently**.
+This assignment is peculiar in that **we can interface the simulator and the real robot indifferently**.
 
 The outcome should look like the animation below:
 
