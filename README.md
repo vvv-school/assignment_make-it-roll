@@ -16,11 +16,17 @@ and the `Gaze Interface` to accomplish the following tasks:
 1. Let iCub **look at the ball**.
 1. Finally, ask iCub to reach for the ball and **make it roll**.
 
+This assignment is peculiar in such a way that **we can interface the simulator
+and the real robot indifferently**.
+
 The outcome should look like the animation below:
 
 ![make-it-roll](/misc/make-it-roll.gif)
 
 Some of the points reported above have been already addressed in the code (e.g. [**detection of the blue ball**](./src/main.cpp#L35-L65)), so you need to **fill in the missing gaps** highlighted by the comment `// FILL IN THE CODE`.
+
+⚠️ Don't push too much by speeding up the movements of the operational
+controllers: you will be eventually controlling the real robot!
 
 Once done, you can test your code in two ways:
 
@@ -29,6 +35,8 @@ Once done, you can test your code in two ways:
     1. We use a **timeout of _120 s_** to check the status of rpc communication, meaning that you have _120 s_ max to accomplish each rpc command.
     1. When you reply to rpc commands, we assume the robot has **finished the movement** (e.g. see [_this line_](./src/main.cpp#L226) in the `respond` method).
     1. The smoke-test will add a little random displacement to the initial position of the ball :wink:
+
+If you pass the test on the simulator, 🕒 book the robot 🤖 to get a real experience!
 
 ## Notes
 - To make the blue ball show up within the simulator, you have to turn on the

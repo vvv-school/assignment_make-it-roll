@@ -9,6 +9,8 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
+#include "helpers.h"
+
 using namespace std;
 using namespace yarp::os;
 using namespace yarp::dev;
@@ -31,6 +33,9 @@ protected:
     Mutex mutex;
     Vector cogL,cogR;
     bool okL,okR;
+
+    bool simulation;
+    ObjectRetriever object;
 
     /***************************************************/
     bool getCOG(ImageOf<PixelRgb> &img, Vector &cog)
@@ -103,11 +108,17 @@ protected:
     }
 
     /***************************************************/
-    void make_it_roll(const Vector &cogL, const Vector &cogR)
+    bool make_it_roll(const Vector &cogL, const Vector &cogR)
     {
-        yInfo()<<"detected cogs = ("<<cogL.toString(0,0)<<") ("<<cogR.toString(0,0)<<")";
+        Vector x;
+        if (simulation)
+        {
+            yInfo()<<"detected cogs = ("<<cogL.toString(0,0)<<") ("<<cogR.toString(0,0)<<")";
+            x=retrieveTarget3D(cogL,cogR);
+        }
+        else if(!object.getLocation(x))
+            return false;
 
-        Vector x=retrieveTarget3D(cogL,cogR);
         yInfo()<<"retrieved 3D point = ("<<x.toString(3,3)<<")";
 
         fixate(x);
@@ -121,6 +132,8 @@ protected:
 
         roll(x,o);
         yInfo()<<"roll!";
+
+        return true;
     }
 
     /***************************************************/
@@ -133,9 +146,12 @@ public:
     /***************************************************/
     bool configure(ResourceFinder &rf)
     {
+        string robot=rf.check("robot",Value("icubSim")).asString();
+        simulation=(robot=="icubSim");
+
         Property optArm;
         optArm.put("device","cartesiancontrollerclient");
-        optArm.put("remote","/icubSim/cartesianController/right_arm");
+        optArm.put("remote","/"+robot+"/cartesianController/right_arm");
         optArm.put("local","/cartesian_client/right_arm");
 
         // let's give the controller some time to warm up
@@ -220,10 +236,13 @@ public:
             // FILL IN THE CODE
             bool go=false;   // you need to properly handle this flag
 
-            if (go)
+            bool rolled=false;
+            if (go || !simulation)
+                rolled=make_it_roll(cogL,cogR);
+            // we assume the robot is not moving now
+
+            if (rolled)
             {
-                make_it_roll(cogL,cogR);
-                // we assume the robot is not moving now
                 reply.addString("ack");
                 reply.addString("Yeah! I've made it roll like a charm!");
             }
