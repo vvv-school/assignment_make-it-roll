@@ -1,6 +1,6 @@
 <application>
 
-  <name>Assignment on Make It Roll App</name>
+  <name>Assignment on Make It Roll App icubSim</name>
 
   <dependencies>
       <port>/yarplogger</port>
@@ -12,6 +12,7 @@
 
   <module>
       <name>assignment_make-it-roll</name>
+      <parameters>--robot icubSim</parameters>
       <environment>YARP_FORWARD_LOG_ENABLE=1</environment>
       <node>localhost</node>
   </module>
