@@ -17,6 +17,9 @@
             <port timeout="10">/icubSim/left_arm/state:o</port>
             <port timeout="10">/icubSim/right_arm/state:o</port>
         </dependencies>
+        <ensure>
+            <wait>2</wait>
+        </ensure>
         <node>testnode</node>
     </module>
     <module>
@@ -26,6 +29,9 @@
             <port timeout="10">/icubSim/torso/state:o</port>
             <port timeout="10">/icubSim/right_arm/state:o</port>
         </dependencies>
+        <ensure>
+            <wait>2</wait>
+        </ensure>
         <node>testnode</node>
     </module>
     <module>
@@ -36,6 +42,9 @@
             <port timeout="10">/icubSim/head/state:o</port>
             <port timeout="10">/icubSim/inertial</port>
         </dependencies>
+        <ensure>
+            <wait>2</wait>
+        </ensure>
         <node>testnode</node>
     </module>
     <module>
@@ -46,6 +55,9 @@
             <port timeout="10">/icubSim/cartesianController/right_arm/state:o</port>
             <port timeout="10">/iKinGazeCtrl/rpc</port>
         </dependencies>
+        <ensure>
+            <wait>3</wait>
+        </ensure>
         <node>testnode</node>
     </module>
     <connection>
