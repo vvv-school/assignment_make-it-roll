@@ -124,7 +124,7 @@ protected:
             yInfo()<<"detected cogs = ("<<cogL.toString(0,0)<<") ("<<cogR.toString(0,0)<<")";
             x=retrieveTarget3D(cogL,cogR);
         }
-        else if(!object.getLocation(x))
+        else if (!object.getLocation(x))
             return false;
 
         yInfo()<<"retrieved 3D point = ("<<x.toString(3,3)<<")";
