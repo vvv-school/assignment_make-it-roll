@@ -24,8 +24,7 @@ The outcome should look like the animation below:
 
 Some of the points reported above have been already addressed in the code (e.g. [**detection of the blue ball**](./src/main.cpp#L35-L65)), so you need to **fill in the missing gaps** highlighted by the comment `// FILL IN THE CODE`.
 
-⚠️ Don't push too much by speeding up the movements of the operational
-controllers: you will be eventually controlling the real robot!
+⚠️ Don't require the operational controllers to perform too fast movements: you will find yourself tuning up your code to make it run on the real robot smoothly.
 
 Once done, you can test your code in two ways:
 
