@@ -104,6 +104,14 @@ protected:
     /***************************************************/
     void look_down()
     {
+        // we ask the controller to keep the vergence
+        // from now on fixed at 5.0 deg, which is the
+        // configuration where we calibrated the stereo-vision;
+        // without that, we cannot retrieve good 3D positions
+        // with the real robot
+        if (!simulation)
+            igaze->blockEyes(5.0);
+
         // FILL IN THE CODE
     }
 
@@ -310,7 +318,7 @@ public:
 
 
 /***************************************************/
-int main()
+int main(int argc, char *argv[])
 {
     Network yarp;
     if (!yarp.checkNetwork())
@@ -319,7 +327,9 @@ int main()
         return 1;
     }
 
-    CtrlModule mod;
     ResourceFinder rf;
+    rf.configure(argc,argv);
+
+    CtrlModule mod;
     return mod.runModule(rf);
 }
