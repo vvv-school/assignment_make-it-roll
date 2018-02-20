@@ -22,7 +22,7 @@ The outcome should look like the animation below:
 
 ![make-it-roll](/misc/make-it-roll.gif)
 
-Some of the points reported above have been already addressed in the code (e.g. [**detection of the blue ball**](./src/main.cpp#L40-L70)), so you need to **fill in the missing gaps** highlighted by the comment `// FILL IN THE CODE` in the [**`main.cpp`**](./src/main.cpp) module.
+Some of the points reported above have been already addressed in the code (e.g. [**detection of the blue ball**](./src/main.cpp#L40-L70)), so you need to **fill in the missing gaps** highlighted by the comment `// FILL IN THE CODE` in the [**`src/main.cpp`**](./src/main.cpp) module.
 
 ⚠️ Don't require the operational controllers to perform too fast movements: you will find yourself tuning up your code to make it run on the real robot smoothly.
 
