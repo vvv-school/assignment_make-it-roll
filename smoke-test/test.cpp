@@ -153,7 +153,7 @@ public:
     /******************************************************************/
     void finishup(const unsigned int score, const string &msg)
     {
-        RTF_TEST_REPORT(msg.c_str());
+        RTF_TEST_REPORT(msg);
         RTF_TEST_CHECK(false,Asserter::format("Total score = %d",score));
     }
 
