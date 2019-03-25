@@ -6,23 +6,23 @@
 
 #include <string>
 
-#include <rtf/dll/Plugin.h>
-#include <rtf/TestAssert.h>
+#include <robottestingframework/dll/Plugin.h>
+#include <robottestingframework/TestAssert.h>
 
-#include <yarp/rtf/TestCase.h>
+#include <yarp/robottestingframework/TestCase.h>
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 #include <yarp/math/Rand.h>
 
 using namespace std;
-using namespace RTF;
+using namespace robottestingframework;
 using namespace yarp::os;
 using namespace yarp::sig;
 using namespace yarp::math;
 
 /**********************************************************************/
-class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
+class TestAssignmentMakeItRoll : public yarp::robottestingframework::TestCase,
                                  public PortReader
 {
     RpcClient portBall;
@@ -39,8 +39,8 @@ class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
         cmd.addString("world");
         cmd.addString("get");
         cmd.addString("ball");
-        RTF_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
-        RTF_ASSERT_ERROR_IF_FALSE(reply.size()>=3,"Invalid reply from world");
+        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
+        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(reply.size()>=3,"Invalid reply from world");
 
         Vector pos(3);
         pos[0]=reply.get(0).asDouble();
@@ -62,7 +62,7 @@ class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
             cmd.addDouble(pos[0]);
             cmd.addDouble(pos[1]);
             cmd.addDouble(pos[2]);
-            RTF_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
+            ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
             return true;
         }
         else
@@ -72,7 +72,7 @@ class TestAssignmentMakeItRoll : public yarp::rtf::TestCase,
 public:
     /******************************************************************/
     TestAssignmentMakeItRoll() :
-        yarp::rtf::TestCase("TestAssignmentMakeItRoll"),
+        yarp::robottestingframework::TestCase("TestAssignmentMakeItRoll"),
         hit(false)
     {
     }
@@ -99,16 +99,16 @@ public:
         portMIR.open(portMIRName);
         portHand.open(portHandName);
 
-        RTF_TEST_REPORT(Asserter::format("Set rpc timeout = %g [s]",rpcTmo));
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT(Asserter::format("Set rpc timeout = %g [s]",rpcTmo));
         portBall.asPort().setTimeout(rpcTmo);
         portMIR.asPort().setTimeout(rpcTmo);
 
-        RTF_TEST_REPORT("Connecting Ports");
-        RTF_ASSERT_ERROR_IF_FALSE(Network::connect(portBallName,"/icubSim/world"),
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("Connecting Ports");
+        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(Network::connect(portBallName,"/icubSim/world"),
                                   "Unable to connect to /icubSim/world");
-        RTF_ASSERT_ERROR_IF_FALSE(Network::connect(portMIRName,"/service"),
+        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(Network::connect(portMIRName,"/service"),
                                   "Unable to connect to /service");
-        RTF_ASSERT_ERROR_IF_FALSE(Network::connect(robotPortName,portHandName),
+        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(Network::connect(robotPortName,portHandName),
                                   Asserter::format("Unable to connect to %s",
                                                    robotPortName.c_str()));
 
@@ -120,7 +120,7 @@ public:
     /******************************************************************/
     virtual void tearDown()
     {
-        RTF_TEST_REPORT("Closing Ports");
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("Closing Ports");
         portBall.close();
         portMIR.close();
         portHand.close();
@@ -142,7 +142,7 @@ public:
             double d=norm(ballPosRobFrame-x);
             if (d<0.05)
             {
-                RTF_TEST_REPORT(Asserter::format("Great! We're at %g [m] from the ball",d));
+                ROBOTTESTINGFRAMEWORK_TEST_REPORT(Asserter::format("Great! We're at %g [m] from the ball",d));
                 hit=true;
             }
         }
@@ -153,8 +153,8 @@ public:
     /******************************************************************/
     void finishup(const unsigned int score, const string &msg)
     {
-        RTF_TEST_REPORT(msg);
-        RTF_TEST_CHECK(false,Asserter::format("Total score = %d",score));
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT(msg);
+        ROBOTTESTINGFRAMEWORK_TEST_CHECK(false,Asserter::format("Total score = %d",score));
     }
 
     /******************************************************************/
@@ -162,9 +162,9 @@ public:
     {
         Time::delay(5.0);
 
-        RTF_TEST_REPORT("Retrieving initial ball position");
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("Retrieving initial ball position");
         Vector initialBallPos=getBallPosition();
-        RTF_TEST_REPORT(Asserter::format("initial ball position = (%s) [m]",
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT(Asserter::format("initial ball position = (%s) [m]",
                                          initialBallPos.toString(3,3).c_str()));
 
         Vector min(3,0.0),max(3,0.0);
@@ -172,10 +172,10 @@ public:
         min[1]= 0.0;  max[1]=0.0;   // y-axis
         min[2]=-0.03; max[2]=0.03;  // z-axis
 
-        RTF_TEST_REPORT("Setting new initial ball position");
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("Setting new initial ball position");
         initialBallPos+=Rand::vector(min,max);
         setBallPosition(initialBallPos);
-        RTF_TEST_REPORT(Asserter::format("new ball position = (%s) [m]",
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT(Asserter::format("new ball position = (%s) [m]",
                                          initialBallPos.toString(3,3).c_str()));
 
         // compute ball position in robot's root frame
@@ -193,7 +193,7 @@ public:
 
         Bottle cmd,reply;
         cmd.addString("look_down");
-        RTF_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
+        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
         if (reply.get(0).asString()!="ack")
         {
             finishup(0,"Unable to look_down");
@@ -201,14 +201,14 @@ public:
         }
         cmd.clear(); reply.clear();
 
-        RTF_TEST_REPORT("We looked down! Gained 1 point");
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("We looked down! Gained 1 point");
         score++;
 
-        RTF_TEST_REPORT("Proximity check is now active");
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("Proximity check is now active");
         portHand.setReader(*this);
 
         cmd.addString("make_it_roll");
-        RTF_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
+        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
         if (reply.get(0).asString()!="ack")
         {
             finishup(score,"Unable to make_it_roll");
@@ -216,29 +216,29 @@ public:
         }
         cmd.clear(); reply.clear();
 
-        RTF_TEST_REPORT("We tried to roll! Gained 1 point");
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("We tried to roll! Gained 1 point");
         score++;
 
-        RTF_TEST_REPORT("Retrieving final ball position");
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT("Retrieving final ball position");
         Vector finalBallPos=getBallPosition();
-        RTF_TEST_REPORT(Asserter::format("final ball position = (%s) [m]",
+        ROBOTTESTINGFRAMEWORK_TEST_REPORT(Asserter::format("final ball position = (%s) [m]",
                                          finalBallPos.toString(3,3).c_str()));
 
         if (hit)
         {
-            RTF_TEST_REPORT("We hit the ball! Gained 2 point");
+            ROBOTTESTINGFRAMEWORK_TEST_REPORT("We hit the ball! Gained 2 point");
             score+=2;
         }
 
         double d=norm(finalBallPos-initialBallPos);
         if (d>0.01)
         {
-            RTF_TEST_REPORT(Asserter::format("Ball has rolled for at least %g [m]! Gained 3 points",d));
+            ROBOTTESTINGFRAMEWORK_TEST_REPORT(Asserter::format("Ball has rolled for at least %g [m]! Gained 3 points",d));
             score+=3;
         }
 
-        RTF_TEST_CHECK(true,Asserter::format("Total score = %d",score));
+        ROBOTTESTINGFRAMEWORK_TEST_CHECK(true,Asserter::format("Total score = %d",score));
     }
 };
 
-PREPARE_PLUGIN(TestAssignmentMakeItRoll)
+ROBOTTESTINGFRAMEWORK_PREPARE_PLUGIN(TestAssignmentMakeItRoll)
