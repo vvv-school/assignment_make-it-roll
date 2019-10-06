@@ -3,6 +3,7 @@
 // Author: Ugo Pattacini - <ugo.pattacini@iit.it>
 
 #include <string>
+#include <mutex>
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
@@ -30,7 +31,7 @@ protected:
     BufferedPort<ImageOf<PixelRgb> > imgLPortOut,imgRPortOut;
     RpcServer rpcPort;
 
-    Mutex mutex;
+    mutex mtx;
     Vector cogL,cogR;
     bool okL,okR;
 
@@ -292,10 +293,10 @@ public:
             return false;
 
         // compute the center-of-mass of pixels of our color
-        mutex.lock();
+        mtx.lock();
         okL=getCOG(*imgL,cogL);
         okR=getCOG(*imgR,cogR);
-        mutex.unlock();
+        mtx.unlock();
 
         PixelRgb color;
         color.r=255; color.g=0; color.b=0;
