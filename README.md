@@ -1,6 +1,8 @@
 Operational Control with iCub
 =============================
 
+[![Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://www.gitpod.io/docs/10_getting_started)
+
 # Prerequisites
 By now, you should be an expert of the following components :wink::
 - [Cartesian Control](http://wiki.icub.org/iCub/main/dox/html/icub_cartesian_interface.html).
