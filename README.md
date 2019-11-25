@@ -5,8 +5,8 @@ Operational Control with iCub
 
 # Prerequisites
 By now, you should be an expert of the following components :wink::
-- [Cartesian Control](http://wiki.icub.org/iCub/main/dox/html/icub_cartesian_interface.html).
-- [Gaze Control](http://wiki.icub.org/iCub/main/dox/html/icub_gaze_interface.html).
+- [Cartesian Control](http://www.icub.org/doc/icub-main/icub_cartesian_interface.html).
+- [Gaze Control](http://www.icub.org/doc/icub-main/icub_gaze_interface.html).
 
 # Assignment
 We want you to develop a rather simple module that employs the `Cartesian Interface`
