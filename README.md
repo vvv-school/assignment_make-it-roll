@@ -1,7 +1,7 @@
 Operational Control with iCub
 =============================
 
-[![Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://www.gitpod.io/docs/10_getting_started)
+[![Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vvv-school/assignment_make-it-roll)
 
 # Prerequisites
 By now, you should be an expert of the following components :wink::
