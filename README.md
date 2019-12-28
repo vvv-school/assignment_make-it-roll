@@ -22,7 +22,7 @@ This assignment is peculiar in that **we can interface the simulator and the rea
 
 The outcome should look like the animation below:
 
-![make-it-roll](/misc/make-it-roll.gif)
+![make-it-roll](/assets/make-it-roll.gif)
 
 Some of the points reported above have been already addressed in the code (e.g. [**detection of the blue ball**](./src/main.cpp#L40-L70)), so you need to **fill in the missing gaps** highlighted by the comment `// FILL IN THE CODE` in the [**`src/main.cpp`**](./src/main.cpp) module.
 
