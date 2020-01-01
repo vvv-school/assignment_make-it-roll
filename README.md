@@ -38,7 +38,9 @@ Once done, you can test your code in two ways:
 
 If you pass the test on the simulator, 🕒 book the robot 🤖 to get a real experience!
 
-## Notes
+<details>
+<summary>🔵 Click to know how to make the blue ball show up in the simulator</summary>
+    
 - To make the blue ball show up within the simulator, you have to turn on the
 flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github.com/robotology/icub-main/blob/master/app/simConfig/conf/iCub_parts_activation.ini#L28) file.
 
@@ -54,5 +56,7 @@ flag **RENDER::objects** in the [**`iCub_parts_activation.ini`**](https://github
 
     Also, you might find this [**resource**](https://github.com/robotology/QA/issues/42) quite useful to get accustomed to configuration files in Yarp :smiley:
 - Alternatively, you can use this [**model**](https://github.com/robotology-playground/icub-gazebo-wholebody/tree/master/worlds/iCub_and_Table) within **Gazebo**. Be careful, the **smoke-test** does work only with iCub_SIM.
+
+</details>
 
 # [How to complete the assignment](https://github.com/vvv-school/vvv-school.github.io/blob/master/instructions/how-to-complete-assignments.md)
