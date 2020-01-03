@@ -2,9 +2,11 @@
 //
 // Author: Ugo Pattacini - <ugo.pattacini@iit.it>
 
+#ifndef HELPERS_H
+#define HELPERS_H
+
 #include <yarp/os/RpcClient.h>
 #include <yarp/sig/Vector.h>
-
 
 class ObjectRetriever
 {
@@ -17,3 +19,5 @@ public:
     bool getLocation(yarp::sig::Vector &location);
     virtual ~ObjectRetriever();
 };
+
+#endif
