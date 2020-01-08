@@ -39,8 +39,10 @@ class TestAssignmentMakeItRoll : public yarp::robottestingframework::TestCase,
         cmd.addString("world");
         cmd.addString("get");
         cmd.addString("ball");
-        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
-        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(reply.size()>=3,"Invalid reply from world");
+        if (!portBall.write(cmd,reply))
+            ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to talk to world");
+        if (reply.size()<3)
+            ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Invalid reply from world");
 
         Vector pos(3);
         pos[0]=reply.get(0).asDouble();
@@ -62,7 +64,8 @@ class TestAssignmentMakeItRoll : public yarp::robottestingframework::TestCase,
             cmd.addDouble(pos[0]);
             cmd.addDouble(pos[1]);
             cmd.addDouble(pos[2]);
-            ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portBall.write(cmd,reply),"Unable to talk to world");
+            if (!portBall.write(cmd,reply))
+                ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to talk to world");
             return true;
         }
         else
@@ -104,13 +107,15 @@ public:
         portMIR.asPort().setTimeout(rpcTmo);
 
         ROBOTTESTINGFRAMEWORK_TEST_REPORT("Connecting Ports");
-        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(Network::connect(portBallName,"/icubSim/world"),
-                                  "Unable to connect to /icubSim/world");
-        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(Network::connect(portMIRName,"/service"),
-                                  "Unable to connect to /service");
-        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(Network::connect(robotPortName,portHandName),
-                                  Asserter::format("Unable to connect to %s",
-                                                   robotPortName.c_str()));
+
+        if (!Network::connect(portBallName,"/icubSim/world"))
+            ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to connect to /icubSim/world");
+
+        if (!Network::connect(portMIRName,"/service"))
+            ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to connect to /service");
+
+        if (!Network::connect(robotPortName,portHandName))
+            ROBOTTESTINGFRAMEWORK_ASSERT_FAIL(Asserter::format("Unable to connect to %s",robotPortName.c_str()));
 
         Rand::init();
 
@@ -193,7 +198,8 @@ public:
 
         Bottle cmd,reply;
         cmd.addString("look_down");
-        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
+        if (!portMIR.write(cmd,reply))
+            ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to talk to MIR");
         if (reply.get(0).asString()!="ack")
         {
             finishup(0,"Unable to look_down");
@@ -208,7 +214,8 @@ public:
         portHand.setReader(*this);
 
         cmd.addString("make_it_roll");
-        ROBOTTESTINGFRAMEWORK_ASSERT_ERROR_IF_FALSE(portMIR.write(cmd,reply),"Unable to talk to MIR");
+        if (!portMIR.write(cmd,reply))
+            ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to talk to MIR");
         if (reply.get(0).asString()!="ack")
         {
             finishup(score,"Unable to make_it_roll");
