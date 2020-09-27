@@ -4,8 +4,8 @@
 
   <dependencies>
       <port>/yarplogger</port>
-      <port>/icubSim/cam/left</port>
-      <port>/icubSim/cam/right</port>
+      <port>/icubSim/cam/left/rgbImage:o</port>
+      <port>/icubSim/cam/right/rgbImage:o</port>
       <port>/icubSim/cartesianController/right_arm/state:o</port>
       <port>/iKinGazeCtrl/rpc</port>
   </dependencies>
@@ -30,13 +30,13 @@
   </module>
 
   <connection>
-      <from>/icubSim/cam/left</from>
+      <from>/icubSim/cam/left/rgbImage:o</from>
       <to>/imgL:i</to>
       <protocol>udp</protocol>
   </connection>
 
   <connection>
-      <from>/icubSim/cam/right</from>
+      <from>/icubSim/cam/right/rgbImage:o</from>
       <to>/imgR:i</to>
       <protocol>udp</protocol>
   </connection>
