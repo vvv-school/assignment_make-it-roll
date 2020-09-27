@@ -9,17 +9,23 @@
   </module>
 
   <module>
-      <name>iCub_SIM</name>
+      <name>gzserver</name>
+      <parameters>assignment_make-it-roll.sdf</parameters>
       <dependencies>
-          <port timeout="20">/yarplogger</port>
+         <port timeout="20">/yarplogger</port>
       </dependencies>
       <environment>YARP_FORWARD_LOG_ENABLE=1</environment>
       <node>localhost</node>
   </module>
 
- <module>
+  <module>
+      <name>gzclient</name>
+      <node>localhost</node>
+  </module>
+
+  <module>
       <name>yarprobotinterface</name>
-      <parameters>--context simCartesianControl --config no_legs.xml</parameters>
+      <parameters>--context gazeboCartesianControl --config no_legs.xml</parameters>
       <dependencies>
           <port timeout="20">/yarplogger</port>
           <port timeout="20">/icubSim/torso/state:o</port>
@@ -35,7 +41,7 @@
 
   <module>
       <name>iKinCartesianSolver</name>
-      <parameters>--context simCartesianControl --part right_arm</parameters>
+      <parameters>--context gazeboCartesianControl --part right_arm</parameters>
       <dependencies>
           <port timeout="20">/yarplogger</port>
           <port timeout="20">/icubSim/torso/state:o</port>
@@ -50,7 +56,7 @@
 
   <module>
       <name>iKinGazeCtrl</name>
-      <parameters>--from configSim.ini</parameters>
+      <parameters>--context gazeboCartesianControl --from iKinGazeCtrl.ini</parameters>
       <dependencies>
           <port timeout="20">/yarplogger</port>
           <port timeout="20">/icubSim/torso/state:o</port>

@@ -6,12 +6,17 @@
         <author email="ugo.pattacini@iit.it">Ugo Pattacini</author>
     </authors>
     <module>
-        <name>iCub_SIM</name>
+        <name>gzserver</name>
+        <parameters>assignment_make-it-roll.sdf</parameters>
+        <node>testnode</node>
+    </module>
+    <module>
+        <name>gzclient</name>
         <node>testnode</node>
     </module>
     <module>
         <name>yarprobotinterface</name>
-        <parameters>--context simCartesianControl --config no_legs.xml</parameters>
+        <parameters>--context gazeboCartesianControl --config no_legs.xml</parameters>
         <dependencies>
             <port timeout="10">/icubSim/torso/state:o</port>
             <port timeout="10">/icubSim/left_arm/state:o</port>
@@ -24,7 +29,7 @@
     </module>
     <module>
         <name>iKinCartesianSolver</name>
-        <parameters>--context simCartesianControl --part right_arm</parameters>
+        <parameters>--context gazeboCartesianControl --part right_arm</parameters>
         <dependencies>
             <port timeout="10">/icubSim/torso/state:o</port>
             <port timeout="10">/icubSim/right_arm/state:o</port>
@@ -36,7 +41,7 @@
     </module>
     <module>
         <name>iKinGazeCtrl</name>
-        <parameters>--from configSim.ini</parameters>
+        <parameters>--context gazeboCartesianControl --from iKinGazeCtrl.ini</parameters>
         <dependencies>
             <port timeout="10">/icubSim/torso/state:o</port>
             <port timeout="10">/icubSim/head/state:o</port>
@@ -50,8 +55,8 @@
     <module>
         <name>assignment_make-it-roll</name>
         <dependencies>
-            <port timeout="10">/icubSim/cam/left</port>
-            <port timeout="10">/icubSim/cam/right</port>
+            <port timeout="10">/icubSim/cam/left/rgbImage:o</port>
+            <port timeout="10">/icubSim/cam/right/rgbImage:o</port>
             <port timeout="10">/icubSim/cartesianController/right_arm/state:o</port>
             <port timeout="10">/iKinGazeCtrl/rpc</port>
         </dependencies>
@@ -61,12 +66,12 @@
         <node>testnode</node>
     </module>
     <connection>
-        <from>/icubSim/cam/left</from>
+        <from>/icubSim/cam/left/rgbImage:o</from>
         <to>/imgL:i</to>
         <protocol>udp</protocol>
     </connection>
     <connection>
-        <from>/icubSim/cam/right</from>
+        <from>/icubSim/cam/right/rgbImage:o</from>
         <to>/imgR:i</to>
         <protocol>udp</protocol>
     </connection>

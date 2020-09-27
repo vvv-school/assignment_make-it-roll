@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="assignment_make-it-roll-ball">
+    <static>false</static>
+    <link name="link">
+        <visual name="visual">
+            <geometry>
+                <sphere>
+                    <radius> 0.035 </radius>
+                </sphere>
+            </geometry>
+            <material>
+                <script>
+                    <uri>file://media/materials/scripts/gazebo.material</uri>
+                    <name>Gazebo/Blue</name>
+                </script>
+            </material>
+        </visual>
+        <collision name="collision">
+            <geometry>
+                <sphere>
+                    <radius> 0.035 </radius>
+                </sphere>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.2"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+        </inertial>
+    </link>
+  </model>
+</sdf>
