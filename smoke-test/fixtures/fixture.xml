@@ -68,11 +68,11 @@
     <connection>
         <from>/icubSim/cam/left/rgbImage:o</from>
         <to>/imgL:i</to>
-        <protocol>udp</protocol>
+        <protocol>unix_stream</protocol>
     </connection>
     <connection>
         <from>/icubSim/cam/right/rgbImage:o</from>
         <to>/imgR:i</to>
-        <protocol>udp</protocol>
+        <protocol>unix_stream</protocol>
     </connection>
  </application>
