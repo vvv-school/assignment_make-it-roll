@@ -4,6 +4,7 @@
 //
 // Author: Ugo Pattacini - <ugo.pattacini@iit.it>
 
+#include <functional>
 #include <mutex>
 #include <string>
 #include <cmath>
@@ -13,8 +14,6 @@
 #include <gazebo/physics/Model.hh>
 #include <gazebo/common/Events.hh>
 #include <ignition/math/Pose3.hh>
-
-#include <boost/bind.hpp>
 
 #include <yarp/os/ConnectionReader.h>
 #include <yarp/os/ConnectionWriter.h>
@@ -95,7 +94,7 @@ public:
     WorldHandler() : processor(this) { }
     
     /**************************************************************************/
-    void Load(gazebo::physics::WorldPtr world, sdf::ElementPtr) {
+    void Load(gazebo::physics::WorldPtr world, sdf::ElementPtr) override {
         std::string ball_name = "assignment_make-it-roll-ball";
 
         this->world = world;
@@ -104,7 +103,7 @@ public:
         rpcPort.setReader(processor);
         rpcPort.open("/" + ball_name + "/rpc");
 
-        auto bind = boost::bind(&WorldHandler::onWorld, this);
+        auto bind = std::bind(&WorldHandler::onWorld, this);
         renderer_connection = gazebo::event::Events::ConnectWorldUpdateBegin(bind);
     }
 
