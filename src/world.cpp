@@ -4,13 +4,17 @@
 //
 // Author: Ugo Pattacini - <ugo.pattacini@iit.it>
 
+#include <mutex>
 #include <string>
 #include <cmath>
 
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/physics/World.hh>
 #include <gazebo/physics/Model.hh>
+#include <gazebo/common/Events.hh>
 #include <ignition/math/Pose3.hh>
+
+#include <boost/bind.hpp>
 
 #include <yarp/os/ConnectionReader.h>
 #include <yarp/os/ConnectionWriter.h>
@@ -28,6 +32,11 @@ class WorldHandler : public gazebo::WorldPlugin
     gazebo::physics::ModelPtr ball;
     gazebo::event::ConnectionPtr renderer_connection;
 
+    std::mutex mtx;
+    bool set_new_pose{false};
+    ignition::math::Pose3d cur_pose;
+    ignition::math::Pose3d new_pose;
+
     yarp::os::Port rpcPort;
     /**************************************************************************/
     class DataProcessor : public yarp::os::PortReader {
@@ -39,8 +48,9 @@ class WorldHandler : public gazebo::WorldPlugin
             auto* returnToSender = connection.getWriter();
             if (returnToSender != nullptr) {
                 yarp::os::Bottle rep;
+                std::lock_guard<std::mutex> lck(hdl->mtx);
                 if (cmd.get(0).asVocab() == yarp::os::Vocab::encode("get")) {
-                    const auto& p = hdl->ball->WorldPose().Pos();
+                    const auto& p = hdl->cur_pose.Pos();
                     rep.addVocab(yarp::os::Vocab::encode("ack"));
                     rep.addDouble(p.X());
                     rep.addDouble(p.Y());
@@ -50,9 +60,9 @@ class WorldHandler : public gazebo::WorldPlugin
                         const auto x = cmd.get(1).asDouble();
                         const auto y = cmd.get(2).asDouble();
                         const auto z = cmd.get(3).asDouble();
-                        const auto& q = hdl->ball->WorldPose().Rot();
-                        ignition::math::Pose3d pose(x, y, z, q.W(), q.X(), q.Y(), q.Z());
-                        hdl->ball->SetWorldPose(pose);
+                        const auto& q = hdl->cur_pose.Rot();
+                        hdl->new_pose = ignition::math::Pose3d(x, y, z, q.W(), q.X(), q.Y(), q.Z());
+                        hdl->set_new_pose = true;
                         rep.addVocab(yarp::os::Vocab::encode("ack"));
                     } else {
                         rep.addVocab(yarp::os::Vocab::encode("nack"));
@@ -70,6 +80,16 @@ class WorldHandler : public gazebo::WorldPlugin
     } processor;
     friend class DataProcessor;
 
+    /**************************************************************************/
+    void onWorld() {
+        std::lock_guard<std::mutex> lck(mtx);
+        if (set_new_pose) {
+            ball->SetWorldPose(new_pose);
+            set_new_pose = false;
+        }
+        cur_pose = ball->WorldPose();
+    }
+
 public:
     /**************************************************************************/
     WorldHandler() : processor(this) { }
@@ -83,6 +103,9 @@ public:
 
         rpcPort.setReader(processor);
         rpcPort.open("/" + ball_name + "/rpc");
+
+        auto bind = boost::bind(&WorldHandler::onWorld, this);
+        renderer_connection = gazebo::event::Events::ConnectWorldUpdateBegin(bind);
     }
 
     /**************************************************************************/
