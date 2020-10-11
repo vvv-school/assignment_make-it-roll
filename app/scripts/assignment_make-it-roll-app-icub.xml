@@ -21,24 +21,24 @@
     <from>/icub/cam/left</from>
     <to>/imgL:i</to>
     <protocol>unix_stream</protocol>
-</connection>
+  </connection>
 
-<connection>
+  <connection>
     <from>/icub/cam/right</from>
     <to>/imgR:i</to>
     <protocol>unix_stream</protocol>
-</connection>
+  </connection>
 
-<connection>
+  <connection>
     <from>/location</from>
     <to>/memory/rpc</to>
     <protocol>tcp</protocol>
-</connection>
+  </connection>
 
-<connection>
+  <connection>
     <from>/calibration</from>
     <to>/iolReachingCalibration/rpc</to>
     <protocol>tcp</protocol>
-</connection>
+  </connection>
 
 </application>
