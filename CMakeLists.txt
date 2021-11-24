@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.5)
 project(assignment_make-it-roll)
 
 # mandatory use of these packages
-find_package(YARP 3.3.0 REQUIRED)
+find_package(YARP 3.5.1 REQUIRED)
 find_package(ICUBcontrib REQUIRED)
 find_package(Gazebo REQUIRED)
 

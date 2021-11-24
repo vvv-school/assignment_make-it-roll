@@ -38,15 +38,15 @@ bool ObjectRetriever::calibrate(Vector &location)
         Bottle cmd,reply;
         cmd.addString("get_location_nolook");
         cmd.addString("iol-right");
-        cmd.addDouble(location[0]);
-        cmd.addDouble(location[1]);
-        cmd.addDouble(location[2]);
+        cmd.addFloat64(location[0]);
+        cmd.addFloat64(location[1]);
+        cmd.addFloat64(location[2]);
         portCalibration.write(cmd,reply);
 
         location.resize(3);
-        location[0]=reply.get(1).asDouble();
-        location[1]=reply.get(2).asDouble();
-        location[2]=reply.get(3).asDouble();
+        location[0]=reply.get(1).asFloat64();
+        location[1]=reply.get(2).asFloat64();
+        location[2]=reply.get(3).asFloat64();
         return true;
     }
 
@@ -59,7 +59,7 @@ bool ObjectRetriever::getLocation(Vector &location)
     if (portLocation.getOutputCount()>0)
     {
         Bottle cmd,reply;
-        cmd.addVocab(Vocab::encode("ask"));
+        cmd.addVocab32("ask");
         Bottle &content=cmd.addList().addList();
         content.addString("name");
         content.addString("==");
@@ -68,20 +68,20 @@ bool ObjectRetriever::getLocation(Vector &location)
 
         if (reply.size()>1)
         {
-            if (reply.get(0).asVocab()==Vocab::encode("ack"))
+            if (reply.get(0).asVocab32()==Vocab32::encode("ack"))
             {
                 if (Bottle *idField=reply.get(1).asList())
                 {
                     if (Bottle *idValues=idField->get(1).asList())
                     {
-                        int id=idValues->get(0).asInt();
+                        int id=idValues->get(0).asInt32();
 
                         cmd.clear();
-                        cmd.addVocab(Vocab::encode("get"));
+                        cmd.addVocab32("get");
                         Bottle &content=cmd.addList();
                         Bottle &list_bid=content.addList();
                         list_bid.addString("id");
-                        list_bid.addInt(id);
+                        list_bid.addInt32(id);
                         Bottle &list_propSet=content.addList();
                         list_propSet.addString("propSet");
                         Bottle &list_items=list_propSet.addList();
@@ -89,7 +89,7 @@ bool ObjectRetriever::getLocation(Vector &location)
                         Bottle replyProp;
                         portLocation.write(cmd,replyProp);
 
-                        if (replyProp.get(0).asVocab()==Vocab::encode("ack"))
+                        if (replyProp.get(0).asVocab32()==Vocab32::encode("ack"))
                         {
                             if (Bottle *propField=replyProp.get(1).asList())
                             {
@@ -98,9 +98,9 @@ bool ObjectRetriever::getLocation(Vector &location)
                                     if (position_3d->size()>=3)
                                     {
                                         location.resize(3);
-                                        location[0]=position_3d->get(0).asDouble();
-                                        location[1]=position_3d->get(1).asDouble();
-                                        location[2]=position_3d->get(2).asDouble();
+                                        location[0]=position_3d->get(0).asFloat64();
+                                        location[1]=position_3d->get(1).asFloat64();
+                                        location[2]=position_3d->get(2).asFloat64();
                                         if (calibrate(location))
                                             return true;
                                     }

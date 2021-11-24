@@ -36,16 +36,16 @@ class TestAssignmentMakeItRoll : public yarp::robottestingframework::TestCase,
     Vector getBallPosition()
     {
         Bottle cmd,reply;
-        cmd.addVocab(Vocab::encode("get"));
+        cmd.addVocab32("get");
         if (!portBall.write(cmd,reply))
             ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to talk to world");
-        if ((reply.get(0).asVocab()!=Vocab::encode("ack")) || (reply.size()<4))
+        if ((reply.get(0).asVocab32()!=Vocab32::encode("ack")) || (reply.size()<4))
             ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Invalid reply from world");
 
         Vector pos(3);
-        pos[0]=reply.get(1).asDouble();
-        pos[1]=reply.get(2).asDouble();
-        pos[2]=reply.get(3).asDouble();
+        pos[0]=reply.get(1).asFloat64();
+        pos[1]=reply.get(2).asFloat64();
+        pos[2]=reply.get(3).asFloat64();
 
         return pos;
     }
@@ -56,13 +56,13 @@ class TestAssignmentMakeItRoll : public yarp::robottestingframework::TestCase,
         if (pos.length()>=3)
         {
             Bottle cmd,reply;
-            cmd.addVocab(Vocab::encode("set"));
-            cmd.addDouble(pos[0]);
-            cmd.addDouble(pos[1]);
-            cmd.addDouble(pos[2]);
+            cmd.addVocab32("set");
+            cmd.addFloat64(pos[0]);
+            cmd.addFloat64(pos[1]);
+            cmd.addFloat64(pos[2]);
             if (!portBall.write(cmd,reply))
                 ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Unable to talk to world");
-            if (reply.get(0).asVocab()!=Vocab::encode("ack"))
+            if (reply.get(0).asVocab32()!=Vocab32::encode("ack"))
                 ROBOTTESTINGFRAMEWORK_ASSERT_FAIL("Invalid reply from world");
             return true;
         }
@@ -88,7 +88,7 @@ public:
     {
         string robot=property.check("robot",Value("icubSim")).asString();
         string hand=property.check("hand",Value("right")).asString();
-        float rpcTmo=(float)property.check("rpc-timeout",Value(120.0)).asDouble();
+        float rpcTmo=(float)property.check("rpc-timeout",Value(120.0)).asFloat64();
 
         string robotPortName("/"+robot+"/cartesianController/"+hand+"_arm/state:o");
 
@@ -138,9 +138,9 @@ public:
             data.read(reader);
 
             Vector x(3);
-            x[0]=data.get(0).asDouble();
-            x[1]=data.get(1).asDouble();
-            x[2]=data.get(2).asDouble();
+            x[0]=data.get(0).asFloat64();
+            x[1]=data.get(1).asFloat64();
+            x[2]=data.get(2).asFloat64();
 
             double d=norm(ballPosRobFrame-x);
             if (d<0.05)

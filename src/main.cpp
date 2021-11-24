@@ -226,7 +226,7 @@ public:
         string cmd=command.get(0).asString();
         if (cmd=="help")
         {
-            reply.addVocab(Vocab::encode("many"));
+            reply.addVocab32("many");
             reply.addString("Available commands:");
             reply.addString("- look_down");
             reply.addString("- make_it_roll");
