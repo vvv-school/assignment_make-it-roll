@@ -24,10 +24,16 @@
             </geometry>
         </collision>
         <inertial>
-            <mass value="0.2"/>
-            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass>0.2</mass>
             <!-- (2/5)*M*R^2 -->
-            <inertia ixx="0.000098" ixy="0.0" ixz="0.0" iyy="0.000098" iyz="0.0" izz="0.000098"/>
+            <inertia>
+              <ixx>0.000098</ixx>
+              <ixy>0.0</ixy>
+              <ixz>0.0</ixz>
+              <iyy>0.000098</iyy>
+              <iyz>0.0</iyz>
+              <izz>0.000098</izz>
+            </inertia>
         </inertial>
     </link>
   </model>
